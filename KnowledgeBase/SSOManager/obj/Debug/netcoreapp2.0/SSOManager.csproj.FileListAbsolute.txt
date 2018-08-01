@@ -1,0 +1,14 @@
+E:\KnowledgeBase\SSOManager\bin\Debug\netcoreapp2.0\SSOManager.deps.json
+E:\KnowledgeBase\SSOManager\bin\Debug\netcoreapp2.0\SSOManager.dll
+E:\KnowledgeBase\SSOManager\obj\Debug\netcoreapp2.0\SSOManager.csproj.CoreCompileInputs.cache
+E:\KnowledgeBase\SSOManager\obj\Debug\netcoreapp2.0\SSOManager.AssemblyInfoInputs.cache
+E:\KnowledgeBase\SSOManager\obj\Debug\netcoreapp2.0\SSOManager.AssemblyInfo.cs
+E:\KnowledgeBase\SSOManager\obj\Debug\netcoreapp2.0\SSOManager.csproj.CopyComplete
+E:\KnowledgeBase\SSOManager\bin\Debug\netcoreapp2.0\SSOManager.pdb
+E:\KnowledgeBase\SSOManager\bin\Debug\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Abstractions.dll
+E:\KnowledgeBase\SSOManager\bin\Debug\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Core.dll
+E:\KnowledgeBase\SSOManager\bin\Debug\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Abstractions.xml
+E:\KnowledgeBase\SSOManager\bin\Debug\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Core.xml
+E:\KnowledgeBase\SSOManager\obj\Debug\netcoreapp2.0\SSOManager.dll
+E:\KnowledgeBase\SSOManager\obj\Debug\netcoreapp2.0\SSOManager.pdb
+E:\KnowledgeBase\SSOManager\obj\Debug\netcoreapp2.0\SSOManager.csprojResolveAssemblyReference.cache

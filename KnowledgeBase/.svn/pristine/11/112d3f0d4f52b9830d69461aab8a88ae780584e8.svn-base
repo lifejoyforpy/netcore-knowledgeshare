@@ -1,0 +1,132 @@
+﻿using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using BoeSj.KnowledgeBase.Domain.Model.Search;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using Nest;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Application.Service
+{
+    public class SearchApp : ISearchApp
+    {
+        protected ISearchRepository _search;
+        public SearchApp(ISearchRepository search)
+        {
+
+            _search = search;
+
+        }
+
+        public async Task<Response<List<post>>> SearchPost(DTO.Input.SearchInput search)
+        {
+            Response<List<post>> response = new Response<List<post>>();
+            try
+            {
+                // post /knowledgebase/post/_search query=search.search
+                Func<SearchDescriptor<post>, ISearchRequest> searchRequest = s=>s.
+                    Index("knowledgebase").
+                    Type(typeof(post).Name.ToLower()).
+                    Query(q=>q.QueryString(qs=>qs.Query(search.Query)));
+
+                Tuple<long, List<post>> result = await _search.Search<post>(searchRequest);
+                response.Data = result.Item2;
+                response.PageIndex = search.PageIndex;
+                response.PageSize = search.PageSize;
+                response.TotalCount = (int)result.Item1;
+            }
+
+            catch (Exception ex)
+            {
+                response.Status = 1;
+                response.Msg = ex.Message.ToString();
+
+            }
+            return response;
+        }
+        // by title or category or 
+        //score 
+        public async Task<Response<List<post>>> SearchPostbyField(DTO.Input.SearchInput search)
+        {
+            Response<List<post>> response = new Response<List<post>>();
+            try
+            {
+                //
+                //new SearchRequest<post>
+                //{
+
+                //    Size = 25,
+                //    Query = new MatchQuery
+                //            {
+                //                Field = Infer.Field<post>(p => p.title.Suffix("keyword")),
+                //                Boost = 1000,
+                //                Query = search.Query,
+                //            }|| new FunctionScoreQuery
+                //            {
+                //                MaxBoost = 50,
+                //                Functions = new List<IScoreFunction>
+                //                {
+                //                    new FieldValueFactorFunction
+                //                    {
+                //                        Field = Infer.Field<post>(p=>p.views),
+                //                        Factor = 0.0001
+                //                    }
+                //                },
+                //                Query = new MultiMatchQuery
+                //                {
+                //                    Query = search.Query,
+                //                    Operator = Operator.And,
+                //                    Fields = Infer.Field<post>(p => p.title.Suffix("keyword"), 1.5)
+                //                        .And("id^0.8")
+                //                        .And<post>(p => p.content, 0.8)
+                //                }
+                //            }
+                //};
+
+
+
+                // post /knowledgebase/post/_search query=search.search
+                Func<SearchDescriptor<post>, ISearchRequest> request = s => s.Index("knowledgebase").Type(typeof(post).Name.ToLower()).
+                Size(search.PageSize).From((search.PageIndex-1)*search.PageSize).
+                    Query(q => q.
+                        Match(m => m
+                                .Field(p => p.title.Suffix("keyword"))
+                                .Boost(1000)
+                                .Query(search.Query)
+                            ) || q
+                        .FunctionScore(fs => fs
+                            .MaxBoost(50)
+                            .Functions(ff => ff
+                                .FieldValueFactor(fvf => fvf
+                                    .Field(p => p.views)
+                                    .Factor(0.0001)
+                                 )
+                             ).
+                    Query(query =>
+                      query.MultiMatch(m =>
+                         m.Fields(f => f.Fields(p => p.content,p=>p.category)).
+                         Query(search.Query)))));
+
+                Tuple<long, List<post>> result = await _search.Search<post>(request);
+                response.Data = result.Item2;
+                response.PageIndex = search.PageIndex;
+                response.PageSize = search.PageSize;
+                response.TotalCount = (int)result.Item1;
+            }
+
+            catch (Exception ex)
+            {
+                response.Status = 1;
+                response.Msg = ex.Message.ToString();
+
+            }
+            return response;
+
+        }
+
+
+    }
+}

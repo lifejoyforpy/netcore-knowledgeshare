@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="EnumVO\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NEST" Version="6.1.0" />
+    <PackageReference Include="NEST.JsonNetSerializer" Version="6.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BoeSj.KnowledgeBase.Infrastructure\BoeSj.KnowledgeBase.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,48 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using KnowledgeBase.Models;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model;
+
+namespace KnowledgeBase.Controllers
+{
+    public class HomeController : Controller
+    {
+        private ITestApp _testApp;
+        public HomeController(ITestApp testApp)
+        {
+            _testApp = testApp;
+        }
+
+        public IActionResult Index()
+        {
+            //var ent = new BiAuth_Role { RoleName = "我来测试", RoleType = 100, CheckStatus = 3, CheckNote = "", UseStatus = 1, DataFlag = 0, Created_By = "", Created_By_Id = "", Created_Time = DateTime.Now,
+            //    Last_Modify_By = "", Last_Modify_By_Id = "", Last_Modify_Time = DateTime.Now, Guid = "" };
+            //_testApp.Save(ent);
+            return View();
+        }
+
+        public IActionResult About()
+        {
+            ViewData["Message"] = "Your application description page.";
+
+            return View();
+        }
+
+        public IActionResult Contact()
+        {
+            ViewData["Message"] = "Your contact page.";
+
+            return View();
+        }
+
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
+}

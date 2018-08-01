@@ -1,0 +1,78 @@
+﻿using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Web.Areas.KonwledgeBackend.Controllers
+{
+    [Area("KonwledgeBackend")]
+    public class QAPublishController : Controller
+    {
+        private readonly IQAPublishApp _IQAPublishApp;
+
+        public QAPublishController(IQAPublishApp IQAPublishApp)
+        {
+            _IQAPublishApp = IQAPublishApp;
+        }
+
+        public IActionResult QADetail(string postGuid = "")
+        {
+            ViewBag.tempGuid = Guid.NewGuid().ToString();
+            ViewBag.postGuid = postGuid;
+            return View();
+        }
+
+        [Produces("application/json")]
+        public async Task<Response<object>> SaveQuestion(QAPublishInput input)
+        {
+            var postGuid = await _IQAPublishApp.QASave(input);
+            return new Response<object> { Status = 1, Msg = "插入成功", Data = new { postGuid } };
+        }
+
+        [Produces("application/json")]
+        public async Task<Response<object>> Publish(QAPublishInput input)
+        {
+            await _IQAPublishApp.Publish(input);
+            return new Response<object> { Status = 1, Msg = "发布成功" };
+        }
+
+        [Produces("application/json")]
+        public async Task<Response<object>> GetQAInfo(string postGuid)
+        {
+            var qaInfo = await _IQAPublishApp.GetQAInfo(postGuid);
+            return new Response<object> { Status = 1, Msg = "", Data = qaInfo };
+        }
+
+        [Produces("application/json")]
+        public async Task<Response<object>> Reply(QAPublishInput input)
+        {
+            await _IQAPublishApp.Reply(input);
+            await _IQAPublishApp.SetState(input.Guid, 2);
+            return new Response<object> { Status = 1, Msg = "", Data = "OK" };
+        }
+
+        [Produces("application/json")]
+        public async Task<Response<object>> GetReplys(string postGuid)
+        {
+            var replys = await _IQAPublishApp.GetReplys(postGuid);
+            return new Response<object> { Status = 1, Msg = "", Data = replys };
+        }
+
+        [Produces("application/json")]
+        public async Task<Response<object>> Like(string replyid, int type)
+        {
+            await _IQAPublishApp.Like(replyid, type);
+            return new Response<object> { Status = 1, Msg = "", Data = "OK" };
+        }
+
+        [Produces("application/json")]
+        public async Task<Response<object>> SetBest(string replyid, string postguid)
+        {
+            await _IQAPublishApp.SetBest(replyid);
+            await _IQAPublishApp.SetState(postguid, 3);
+            return new Response<object> { Status = 1, Msg = "", Data = "OK" };
+        }
+    }
+}

@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+
+namespace BoeSj.KnowledgeBase.Web.Areas.KonwledgeBackend.Controllers
+{
+    [Area("KonwledgeBackend")]
+    public class KnowLedgePublishController : Controller
+    {
+        public IActionResult Publish()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> UploadFiles(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return Json(new Response<bool> { Data = false, Msg = "未选择文件", Status = 0 });
+
+            var filextention = Path.GetExtension(file.FileName);
+            //if (filextention != ".xls" && filextention != ".xlsx")
+            //    return Json(new Response<bool> { Data = false, Msg = "请选择Excel文件", Status = 0 });
+
+            //验证文件格式
+            using (var stream = new MemoryStream())
+            {
+                await file.CopyToAsync(stream);
+                return Json("");
+            }
+
+        }
+    }
+}

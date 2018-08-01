@@ -1,0 +1,539 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "QADetail";
+}
+@section CSS
+    {
+    <link href="~/lib/summernote/summernote.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/css/wizard.css">
+    <link href="~/css/theme_styles.css" rel="stylesheet" />
+    <link href="~/lib/jqueryuploadfile/uploadfile.css" rel="stylesheet" />
+    <style>
+        .has_accept {
+            left: 20px;
+            height: 50px;
+            background: url('../../../../images/accept_icon.png') left center no-repeat;
+            overflow: hidden;
+            padding-left: 59px;
+            padding-top: 1px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #53ad7f;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .vote-accepted-on {
+            background-position: -40px -270px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        .vote span {
+            display: block;
+            color: #6a737c;
+            text-align: center
+        }
+
+        .vote-count-post {
+            font-size: 20px;
+        }
+
+        .vote-up-off {
+            height: 30px;
+            text-indent: -9999em;
+            font-size: 1px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            width: 40px;
+            margin-bottom: 2px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+
+        .vote-down-off {
+            height: 30px;
+            text-indent: -9999em;
+            font-size: 1px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            width: 40px;
+            margin-bottom: 2px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+
+        .innerform {
+            margin-left: 15px
+        }
+
+        .buttongroup {
+            text-align: center;
+            padding-top: 10px
+        }
+
+        .qatitle {
+            font-size: 20px;
+            line-height: 1.35;
+            font-weight: normal;
+            margin-bottom: .5em
+        }
+    </style>
+}
+<div class="page-container_my" id="qa">
+    <div class="container_my">
+        <div class="row">
+            <div class="col-lg-12">
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12" style="padding:10px 60px">
+                <div class="main-box clearfix" style="min-height: 700px;">
+                    <header class="main-box-header clearfix">
+                        <article class="type-page hentry clearfix">
+                            <h1 class="post-title">你问我答</h1>
+                            <hr>
+                        </article>
+                    </header>
+                    <div class="main-box-body clearfix">
+                        <div id="myWizard" class="wizard">
+                            <div class="wizard-inner">
+                                <ul class="steps">
+                                    <li data-target="#step1" class="active"><span class="badge badge-primary">1</span>问题描述<span class="chevron"></span></li>
+                                    <li data-target="#step2"><span class="badge">2</span>问题提交<span class="chevron"></span></li>
+                                    <li data-target="#step3"><span class="badge">3</span>问题答复<span class="chevron"></span></li>
+                                    @*<li data-target="#step4"><span class="badge">4</span>问题采纳<span class="chevron"></span></li>*@
+                                </ul>
+                                @*<div class="actions">
+                                        <button type="button" class="btn btn-default btn-mini btn-prev"> <i class="icon-arrow-left"></i>Prev</button>
+                                        <button type="button" class="btn btn-success btn-mini btn-next" data-last="Finish">Next<i class="icon-arrow-right"></i></button>
+                                    </div>*@
+                            </div>
+                            <div>
+                                <div class="step-content">
+                                    <div class="step-pane active" id="step1">
+                                        <br>
+                                        <div class="row" id="qustioninfo" v-if="postGuid===''?'ok':''">
+
+                                            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+                                                <form class="col-md-12 col-sm-12 col-lg-12">
+                                                    <div class="alert alert-info fade in">
+                                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                                        <i class="fa fa-info-circle fa-fw fa-lg"></i>
+                                                        <strong>Hi!</strong> 请描述您需要帮助的问题
+                                                    </div>
+                                                    <div class="form-group form-inline">
+                                                        <input type="text" name="name" id="name" class="form-control required" value="" placeholder="请输入问题标题" style="width:100%" />
+                                                    </div>
+                                                    <div class="form-group form-inline">
+                                                        <div id="summernote"></div>
+                                                    </div>
+                                                    <div class="form-group form-inline">
+                                                        <label class="col-md-2 col-sm-2 col-lg-2">附件上传：</label>
+                                                        <div class="col-md-10 col-sm-10 col-lg-10">
+                                                            <div id="fileuploader"><label>请选择Excel文件</label></div>
+                                                            <div id="extrabutton" class="ajax-file-upload-green">上传</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group form-inline">
+                                                        <div class="col-md-12 col-sm-12 col-lg-12 buttongroup">
+                                                            <a v-on:click="PostQuestion()" class="btn btn-secondary">
+                                                                <i class="fa fa-plus-circle fa-lg"></i> 保存草稿
+                                                            </a>
+                                                            <a v-on:click="SetQuestionType()" class="btn btn-success">
+                                                                <i class="fa fa-plus-circle fa-lg"></i> 问题提交
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="row" v-if="(postGuid==='' || QAInfo.state===0)?'':'ok'">
+
+                                            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+
+                                                <div class="qatitle">
+                                                    <h2>{{QAInfo.title}}</h2>
+                                                </div>
+                                                <div v-html="QAInfo.content">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-pane" id="step2">
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+                                                <div>
+                                                    <form class="col-md-12 col-sm-12 col-lg-12">
+                                                        <div class="alert alert-info fade in">
+                                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                                            <i class="fa fa-info-circle fa-fw fa-lg"></i>
+                                                            <strong>Hi!</strong> 请选择问题所属部门或分类，并发布
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <div class="form-group col-md-6">
+                                                                <label for="qacategory">问题分类</label>
+                                                                <select v-model="QAInfo.questionCategory" class="form-control" id="qacategory">
+                                                                    <option>1</option>
+                                                                    <option>2</option>
+                                                                    <option>3</option>
+                                                                    <option>4</option>
+                                                                    <option>5</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label for="department">所属部门</label>
+                                                                <select v-model="QAInfo.belongDepartment" class="form-control" id="department">
+                                                                    <option>部门一</option>
+                                                                    <option>部门二</option>
+                                                                    <option>部门三</option>
+                                                                    <option>部门四</option>
+                                                                    <option>部门五</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-12 col-sm-12 col-lg-12 buttongroup">
+                                                            <a v-on:click="Previous()" class="btn btn-secondary">
+                                                                <i class="fa fa-plus-circle fa-lg"></i> 后退
+                                                            </a>
+                                                            <a v-on:click="Publish()" class="btn btn-success">
+                                                                <i class="fa fa-plus-circle fa-lg"></i> 发布问题
+                                                            </a>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-pane" id="step3">
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class=" feed">
+                                                    <div class="main-box-body clearfix">
+                                                        <ul>
+                                                            <li v-for="item in Replys" v-on:mouseover="overShow" v-on:mouseout="outHide">
+                                                                <div v-if="(item.isBest===1)?'ok':''" class="has_accept">
+
+                                                                    已采纳
+                                                                </div>
+                                                                <div>
+                                                                    <div class="img">
+                                                                        <img src="~/images/george.png" />
+                                                                    </div>
+                                                                    <div class="title" style="line-height:30px">
+                                                                        <a href="#">{{item.author}}</a> {{item.jobNum}}
+                                                                    </div>
+                                                                    <div class="post-time">
+                                                                        {{item.createTime}}
+                                                                    </div>
+                                                                    <div class="time-ago">
+                                                                        <i class="fa fa-clock-o"></i> {{item.createTime.getDateDiff()}}
+                                                                    </div>
+                                                                    <div style="display:grid;grid-template-columns:max-content 1fr">
+                                                                        <div class="votecell post-layout--left" style="width:46px;grid-column:1">
+                                                                            <div class="vote">
+                                                                                <input type="hidden" name="_id_" value="50820935">
+                                                                                <a v-on:click="Ding(item)" class="vote-up-off" style="background-position: 0 -170px;" title="顶">up vote</a>
+                                                                                <span itemprop="upvoteCount" class="vote-count-post ">{{item.likes}}</span>
+                                                                                <a v-on:click="Cai(item)" class="vote-down-off" style="background-position: 0 -220px;" title="踩">down vote</a>
+                                                                                <span v-on:click="SetBest(item)" class="vote-accepted-on load-accepted-answer-date" style="width:40px;height:40px;display: none;" title="点击采纳此回答"></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div v-html="item.content" style="grid-column:2;margin-left:15px" v-on:mouseover="overShow" v-on:mouseout="outHide">
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group form-inline">
+                                            <div id="summernotereply"></div>
+                                        </div>
+                                        <div class="col-md-12 col-sm-12 col-lg-12 buttongroup">
+                                            <a v-on:click="Previous()" class="btn btn-secondary">
+                                                <i class="fa fa-plus-circle fa-lg"></i> 后退
+                                            </a>
+                                            <a v-on:click="Reply()" class="btn btn-success">
+                                                <i class="fa fa-plus-circle fa-lg"></i> 回复问题
+                                            </a>
+                                            <a v-on:click="Back()" class="btn btn-default">
+                                                <i class="fa fa-plus-circle fa-lg"></i> 退回问题
+                                            </a>
+                                        </div>
+                                    </div>
+                                    @*<div class="step-pane" id="step4">
+                                            <br>
+                                            <h4>This is step 4</h4>
+                                            <div class="alert alert-success fade in" style="margin: 100px 0;">
+                                                <i class="fa fa-check-circle fa-fw fa-lg"></i>
+                                                <strong>Congratulation!</strong> You have successfully finished our nice wizard.
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/lib/summernote/summernote.min.js"></script>
+    <script src="~/lib/summernote/summernote-zh-CN.js"></script>
+    <script src="~/lib/jqueryuploadfile/jquery.uploadfile.min.js" charset="gb2312"></script>
+    <script src="~/js/wizard.js"></script>
+    <div>
+        <script>
+            var postGuid = '@ViewBag.postGuid';
+            var tempGuid = '@ViewBag.tempGuid';
+        var vm = new Vue({
+            // 选项
+            el: '#qa',
+            data: {
+                QAInfo: {},
+                Replys: {},
+                Wizard: {},
+                Setp: 1,
+                postGuid: postGuid,
+                showText: false,
+                hideText: true
+            },
+            methods: {
+                init: function () {
+                    if (postGuid != '') {
+                        this.GetQAInfo(postGuid);
+                        this.GetReplys(postGuid);
+                    }
+                    else {
+                        this.Wizard = $(document).wizard({
+                            maxItem: {
+                                step: 3
+                            },
+                            currentItem: {
+                                step: this.Setp
+                            }
+                        })
+                    }
+                    var extraObj = $("#fileuploader").uploadFile({
+                        url: "@Url.Action("QAUploadFiles", "KnowLedgePublish", new { area= "KonwledgeBackend"})",
+                        formData: { postguid: tempGuid},
+                        statusBarWidth: 'auto',
+                        dragdropWidth: 'auto',
+                        showDelete: true,
+                        showDownload: true,
+                        autoSubmit: false,
+                        showProgress: true,
+                        extraHTML: function () {
+                            return "";
+                        },
+                        //deleteCallback: function (data, pd) {
+                        //    console.log('delete...')
+                        //},
+                        onSuccess: function (files, response, xhr, pd) {
+                            console.log(response)
+                            if (response.status == 1) {
+                                layer.alert("上传成功");
+                                extraObj.reset();
+                            } else {
+                                layer.alert("上传失败，重新上传");
+                            }
+                            console.log(response)
+                        },
+                        onError: function (files, status, message, pd) {
+                            console.error(message);
+                            }
+                        });
+                        $("#extrabutton").click(function () {
+                            extraObj.startUpload();
+                        });
+                },
+                PostQuestion: function () {
+                    API.POST(
+                        '@Url.Action("SaveQuestion", "QAPublish")',
+                        {
+                            Guid: this.QAInfo.guid,
+                            Content: $('#summernote').summernote('code'),
+                            TempGuid: tempGuid
+
+                        }).then(ret =>
+                        {
+                            console.log(ret);
+                            this.QAInfo.guid = ret.postGuid;
+                            layer.alert('保存成功')
+                        });
+                },
+                SetQuestionType: function () {
+                    API.POST(
+                        '@Url.Action("SaveQuestion", "QAPublish")',
+                        {
+                            Guid: this.QAInfo.guid,
+                            Content: $('#summernote').summernote('code')
+
+                        }).then(ret =>
+                        {
+                            console.log(ret);
+                            this.QAInfo.guid = ret.postGuid;
+                            this.Wizard.next();
+                        });
+                },
+                Reply: function () {
+                    API.POST(
+                        '@Url.Action("Reply", "QAPublish")',
+                        {
+                            Guid: this.QAInfo.guid,
+                            Content: $('#summernotereply').summernote('code')
+
+                        }).then(ret =>
+                        {
+                            layer.alert('回复成功');
+                            this.GetReplys(this.QAInfo.guid);
+                        }).catch(ret => layer.alert('抱歉,回复失败'));
+                },
+                GetReplys: function (postGuid) {
+                    API.POST(
+                        '@Url.Action("GetReplys", "QAPublish")',
+                        {
+                            postGuid: postGuid,
+
+                        }).then(ret =>
+                        {
+                            this.Replys = ret;
+                        }).catch(ret => console.log('获取回复错误'));
+                },
+                Publish: function () {
+                    API.POST(
+                        '@Url.Action("Publish", "QAPublish")',
+                        {
+
+                            Guid: this.QAInfo.guid,
+                            BelongDepartment: this.QAInfo.BelongDepartment,
+                            QuestionCategory: this.QAInfo.QuestionCategory
+                        }).then(ret =>
+                        {
+                            layer.alert('恭喜！您的问题已发布成功')
+                            this.Wizard.next();
+                        }).catch(ret=>layer.alert('抱歉,提交失败'));
+                },
+                Previous:function () {
+                    this.Wizard.previous();
+                },
+                GetQAInfo: function (postGuid) {
+                     API.POST(
+                        '@Url.Action("GetQAInfo", "QAPublish")',
+                        {
+                            postGuid: postGuid,
+                        }).then(ret =>
+                        {
+                            this.QAInfo = ret;
+                            this.Step = ret.state + 2 > 3 ? 3 : ret.state + 2;
+                            this.Wizard = $(document).wizard({
+                                maxItem: {
+                                    step: 3
+                                },
+                                currentItem: {
+                                    step: this.Step
+                                }
+                            });
+                            this.Wizard.currentStep = this.Step;
+                            this.Wizard.setState();
+                            if (ret.state > 0) {
+                                $('#qustioninfo').hide();
+                            }
+                         })
+                         .catch(ret => layer.alert('抱歉,加载失败'));
+
+                },
+                Ding: function (reply) {
+                     API.POST(
+                        '@Url.Action("Like", "QAPublish")',
+                        {
+                            replyid: reply.id,
+                            type:1
+                        }).then(ret =>
+                        {
+                            reply.likes++;
+                        })
+                         .catch(ret => layer.alert('抱歉,操作失败'));
+
+                },
+                Cai: function (reply) {
+                        API.POST(
+                        '@Url.Action("Like", "QAPublish")',
+                        {
+                            replyid: reply.id,
+                            type:2
+                        }).then(ret =>
+                        {
+                            reply.likes--;
+                        })
+                         .catch(ret => layer.alert('抱歉,操作失败'));
+
+                },
+                SetBest: function (reply) {
+                    layer.confirm('您确定要设置当前回复为最佳答案么？', {
+                        btn: ['确定', '取消'] //按钮
+                    }, function () {
+                        API.POST(
+                        '@Url.Action("SetBest", "QAPublish")',
+                        {
+                            postguid: vm.$data.QAInfo.guid,
+                            replyid: reply.id
+                        }).then(ret =>
+                        {
+                            layer.alert('采纳成功');
+                            vm.GetReplys(vm.$data.QAInfo.guid);
+                            //reply.likes--;
+                        }).catch(ret => layer.alert('抱歉,操作失败'));
+                    }, function () {
+
+                    });
+                },
+                Back: function () {
+                    layer.prompt({ title: '退回原因', formType: 2 }, function (text, index) {
+                        layer.close(index);
+                        layer.alert('演示完毕！您的口令：' + '<br>您最后写下了：' + text);
+                    });
+
+                },
+                overShow: function (event) {
+                    $(event.target).parents().find('.vote-accepted-on:first').last().show();
+                },
+                outHide:function(event) {
+                    $(event.target).parents().find('.vote-accepted-on:first').last().hide();
+                }
+            }
+        });
+
+        $(document).ready(function () {
+
+            vm.init();
+            $('#summernote').summernote({
+                //airMode: true,
+                lang: 'zh-CN',
+                height: 300,
+                minHeight: 200
+            });
+            $('#summernotereply').summernote({
+                //airMode: true,
+                lang: 'zh-CN',
+                height: 300,
+                minHeight: 200
+            });
+        });
+        </script>
+    </div>
+}

@@ -1,0 +1,274 @@
+﻿
+@{
+    ViewData["Title"] = "CategoryIndex";
+    Layout = "~/Views/Shared/_StageLayout.cshtml";
+}
+
+
+<link href="~/lib/jstree/themes/default/style.min.css" rel="stylesheet" />
+    @*<link href="~/lib/jstree/themes/default-dark/style.min.css" rel="stylesheet" />*@
+    <style>
+
+
+
+
+        .search {
+            box-shadow: inset 0 0 4px #eee;
+            width: 150px;
+            margin: 0;
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: 1px solid silver;
+            font-size: 1.1em;
+            /*border-right-style:dotted*/
+        }
+
+        .form-inner-height {
+            margin:20px 0
+        }
+    </style>
+
+
+
+            <div class="row">
+                <div class="col-md-12 page-content boxsha">
+                    <article class="type-page hentry clearfix">
+                        <h2 class="post-title">分类设定</h2>
+                        <hr>
+                    </article>
+                    <div class="col-md-12">
+                        <div class="col-md-4" style="border-right:1px dotted #978484">
+                            <span for="demo_q">分类搜索：</span>
+                            <input type="text" value="" class="search" id="demo_q" placeholder="Search" />
+                            <div id="categorytree" class="" style="margin-top:1em; min-height:200px"></div>
+                            @*<div id="tree" class="" style="margin-top:1em; min-height:200px"></div>*@
+                        </div>
+                        <div class="col-md-8">
+                            <div class="form-group form-inline form-inner-height">
+                                <label class="col-md-2  control-label">描述详情：</label>
+                                <input type="text" id="CategoryDescription" name="CategoryDescription" v-model="CategoryDescription" style="width:300px" placeholder="分类描述">
+                            </div>
+                            <div class="form-group form-inline form-inner-height">
+                                <label class="col-md-2">所属部门：</label>
+                                <select v-model="Departments" id="Departments" name="Departments" style="width:300px">
+                                    <option value="" selected="selected">-请选择-</option>
+                                    <option value="1">A</option>
+                                    <option value="2">B</option>
+                                    <option value="3">C</option>
+                                    <option value="4">D</option>
+                                    <option value="5">E</option>
+                                </select>
+                            </div>
+                            @*<div class="form-group form-inline form-inner-height">
+                                <div class="checkbox-nice checkbox-inline">
+                                    <input type="radio" name="IsLocked" id="ch_lock0" v-model="IsLocked" value="0" />
+                                    <label for="ch_lock0">
+                                        仅自己可见 <i class="fa fa-lock" aria-hidden="true"></i>
+                                    </label>
+                                </div>
+                                <div class="checkbox-nice checkbox-inline">
+                                    <input type="radio" name="IsLocked" id="ch_lock1" v-model="IsLocked" value="1" />
+                                    <label for="ch_lock1">
+                                        仅部门可见 <i class="fa fa-lock" aria-hidden="true"></i>
+                                    </label>
+                                </div>
+                                <div class="checkbox-nice checkbox-inline">
+                                    <input type="radio" name="IsLocked" id="ch_lock2" v-model="IsLocked" value="2" />
+                                    <label for="ch_lock2">
+                                        公开 <i class="fa fa-unlock" aria-hidden="true"></i>
+                                    </label>
+                                </div>
+                            </div>*@
+                            <div class="form-group form-inline form-inner-height">
+                                <a v-on:click="updateset" class="btn btn-default" style="margin-left:50px">
+                                    <i class="fa fa-pencil-square-o fa-lg"></i> 保存设置
+                                </a>
+                            </div>
+                        </div>
+                     </div>
+                    
+
+                </div>
+            </div>
+
+@section Scripts
+    {
+    @*<script src="~/lib/jstree/jstree.min.js"></script>*@
+    <script src="~/lib/jstree/jstree321.min.js"></script>
+    <script>
+        var vm = new Vue({
+            el: '#category',
+            data: {
+                Id: 0,
+                Guid:'',
+                CategoryName: '',
+                CategoryDescription: '',
+                Departments: '',
+                //IsLocked: 0,
+                ParentGuid:''
+            },
+            methods: {
+                updateset: function () { 
+                    console.log(vm.$data)
+                    API.GET('@Url.Action("UpdateSettings", "Category", new { area= "KonwledgeBackend" })', vm.$data
+                                        ).then(r => {
+                                            layer.msg("设置成功！");
+                                            $('#categorytree').jstree(true).refresh();
+                                        }).catch(r => { 
+                                            layer.msg("设置失败！！！");
+                                        });
+                },
+                init: function () {
+                    var to = false;
+                    $('#demo_q').keyup(function () {
+                        if (to) { clearTimeout(to); }
+                        to = setTimeout(function () {
+                            var v = $('#demo_q').val();
+                            $('#categorytree').jstree(true).search(v);
+                        }, 250);
+                    });
+
+                    vm.initree();
+
+                    //一次性拉取
+                    @*API.GET('@Url.Action("GetCategories2", "Category", new { area= "KonwledgeBackend" })'
+                    ).then(r => {
+                        vm.initree(r);
+                    }).catch(r => {
+                        layer.msg("获取数据失败！！！");
+                    });*@
+                },
+                initree: function () { 
+                    $('#categorytree').jstree({
+                        "core": {
+                            "animation": 0,
+                            "check_callback": true,
+                            'force_text': true,
+                            "themes": {
+                                //"stripes": true,
+                                "dots": false
+                            },
+                            'data':
+                                {
+                                    "url": function (node) {
+                                        var flag = "";
+                                        if (node.id === '#') { flag = "root" };
+                                        return '@Url.Action("GetCategories", "Category", new { area = "KonwledgeBackend" })?flag=' + flag
+                                    },
+                                    "data": function (node) {
+                                        console.log(node)
+                                        return { "id": node.id };
+                                    }
+                                }
+                                //[treedata]
+                            ,
+                            'check_callback': function (operation, node, parent, position, more) {
+                                
+                                if (operation === 'rename_node') {
+                                    console.log('checkcallback')
+                                    API.GET('@Url.Action("RenameCategory", "Category", new { area= "KonwledgeBackend" })?id=' + node.id + '&name=' + position
+                                        ).then(r => {
+                                            layer.msg("命名成功！");
+                                            $('#categorytree').jstree(true).refresh();
+                                            
+                                        }).catch(r => { 
+                                            layer.msg("命名失败！！！");
+                                            //return false;
+                                        });
+                                }
+                                return true;
+                            },
+                        },
+                        "types": {
+                            //"#": {"valid_children": ["default"] },
+                            "default": {
+                                "icon": "fa fa-flag"
+                            },
+                        },
+                        "plugins": [
+                            "contextmenu",
+                            "search",
+                            "state",
+                            "types"
+                        ],
+                        "contextmenu": {
+                            'items': function (node) { 
+                                var tmp = $.jstree.defaults.contextmenu.items();
+                                delete tmp.ccp;
+                                delete tmp.create.action;
+                                tmp.create.label = "新建分类";
+                                tmp.create.action = function (data) {
+                                    var inst = jQuery.jstree.reference(data.reference),
+                                        obj = inst.get_node(data.reference);
+                                    var name = '新分类';
+
+                                    //console.log(obj);
+                                    //inst.create_node(obj, { type: "default", text: name, id: 'adsdadfs' }, "last", function (new_node) {
+                                    //    console.log('create...');
+                                    //    setTimeout(function () {
+                                    //        inst.edit(new_node);
+                                    //        console.log(new_node);
+                                    //    }, 0)
+                                    //});
+                                    //console.log('end create...');
+                                    API.GET('@Url.Action("CreateCategory", "Category", new { area= "KonwledgeBackend" })?parentid=' + obj.id + '&name=' + name
+                                    ).then(r => {
+                                        inst.create_node(obj, { type: "default", text: name, id: r }, "after", function (new_node) {
+                                            
+                                            setTimeout(function () {
+                                                inst.edit(new_node);
+                                                //console.log(new_node);
+                                                
+                                            }, 0)
+                                        });
+
+                                    }).catch(r => layer.msg("添加失败！！！"));
+                                }
+                                tmp.rename.label = "重命名";
+                                tmp.rename.separator_after = false;
+                                tmp.rename.action = function (data) {
+                                    var inst = $.jstree.reference(data.reference),
+                                        obj = inst.get_node(data.reference);
+                                    inst.edit(obj);
+                                }
+                                tmp.remove.label = "删除";
+                                tmp.remove.action = function (data) { 
+                                    var inst = $.jstree.reference(data.reference),
+                                            obj = inst.get_node(data.reference);
+                                        console.log('delete')
+                                    API.GET('@Url.Action("RemoveCategory", "Category", new { area= "KonwledgeBackend" })?id=' + obj.id
+                                    ).then(r => {
+                                        if (inst.is_selected(obj)) {
+                                            inst.delete_node(inst.get_selected());
+                                        }
+                                        else {
+                                            inst.delete_node(obj);
+                                        }
+
+                                        layer.msg("删除成功！")
+                                    }).catch(r => layer.msg("删除操作失败！！！"));
+                                }
+                                return tmp;
+                            },
+
+                        }
+                        
+                    }).on("select_node.jstree", function (e, data) {
+                        console.log(data.node)
+                        vm.Guid = data.node.id;
+                        vm.CategoryName = data.node.text;
+                        vm.CategoryDescription = data.node.state.categoryDescription;
+                        vm.Departments = data.node.state.departments;
+                        //vm.IsLocked = data.node.state.isLocked;
+                        vm.ParentGuid = data.node.parent;
+                        vm.Id = data.node.state.id;
+                    });
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            vm.init();
+        })
+    </script>
+}

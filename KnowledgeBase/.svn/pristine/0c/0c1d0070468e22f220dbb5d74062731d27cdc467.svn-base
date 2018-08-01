@@ -1,0 +1,38 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace BoeSj.KnowledgeBase.Application.DTO.Input
+{
+    public class KnowledegeInput : PageModel
+    {
+        public string Id { get; set; } = "a9f5e372-eb48-4f26-b1f8-bdae87520822";
+        public string Title { get; set; }
+        public string JobNum { get; set; }
+
+        public string Author { get; set; }
+
+        public string Guid { get; set; }
+
+        public int Views { get; set; } = 0;
+
+        public int Likes { get; set; } = 0;
+
+        public int Status { get; set; } = 0;
+
+        /// <summary>
+        /// 0 仅自己可见 1 部门可见 2 公开
+        /// </summary>
+        public int Locked { get; set; } = 0;
+
+        public DateTime CreateTime { get; set; } = DateTime.Now;
+
+        public string Category { get; set; }
+
+        public List<string> Tag { get; set; }
+
+        public string Content { get; set; }
+
+        public int Type { get; set; } = 0;
+        public string PostGuid { get; set; }
+    }
+}

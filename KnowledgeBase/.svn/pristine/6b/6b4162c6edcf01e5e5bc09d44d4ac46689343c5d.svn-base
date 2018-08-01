@@ -1,0 +1,26 @@
+﻿{
+  "ConnectionStrings": {
+    "MySqlConnection": "Server=10.22.10.101;Port=3306;Database=knowledgebase;Uid=boe;Pwd=boe888888;SslMode=none",
+    "MongoConnection": "mongodb://10.22.10.101"
+  },
+  "Mongodb": {
+    "DataBase": "KnowledgeBase",
+    "UserName": "admin",
+    "Password": "admin",
+    "Services": [
+      {
+        "Host": "10.22.10.101",
+        "Port": "27017"
+      }
+    ]
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "filePath": {
+    "GridFsDownloadPath": "/www.root/file/download"
+  }
+}

@@ -1,0 +1,192 @@
+﻿@using Microsoft.AspNetCore.Http;
+@using SSOManagerLib;
+@using SSOManagerLib.Model;
+
+@{
+    var Userinfo = "admin";/*Context.Session.Get<UserSSOInfo>("userinfo").User;*/
+    var loginurl = "";/* Context.Session.GetString("loginurl");*/
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>知识库</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/css/bootstrap5152.css" rel="stylesheet" />
+    <link href="~/css/responsive5152.css" rel="stylesheet" />
+    <link href="~/css/main5152.css" rel="stylesheet" />
+    <link href="~/images/favicon.png" rel="shortcut icon" />
+    <link href="~/css/fakeLoader.css" rel="stylesheet" />
+    <link href="~/css/components.min.css" rel="stylesheet" />
+    <link href="~/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-tagsinput/bootstrap-tagsinput.css" rel="stylesheet" />
+    <link href="~/lib/bootstrap-tagsinput/bootstrap-tagsinput-typeahead.css" rel="stylesheet" />
+    <link href="~/css/menufloat.css" rel="stylesheet" />
+    @RenderSection("CSS", required: false)
+</head>
+<body>
+    <div id="fakeLoader"></div>
+    <div class="header-wrapper">
+        <header>
+            <div class="container">
+                <div class="logo-container">
+                    <!-- Website Logo -->
+                    <a href="/" title="Knowledge Base Theme">
+                        <img src="~/images/logo.png" alt="知识库">
+                    </a>
+                    <span class="tag-line">知识库</span>
+                </div>
+                <!-- Start of Main Navigation -->
+                <nav class="main-nav">
+                    <div class="menu-top-menu-container">
+                        <ul id="menu-top-menu" class="clearfix">
+                            <li><a href="/" class="menu-top-active">知识库首页</a></li>
+                            <li><a href="@Url.Action("List", "BackendManage", new { area= "KonwledgeBackend"})">我的知识库</a></li>
+                            <li>
+                                <a href="#">xxxx</a>
+                                @*//@Userinfo.UserName*@
+                                <a href="#"></a>
+                                <ul class="sub-menu">
+                                    <li><a href="@Url.Action("List", "BackendManage", new { area= "KonwledgeBackend"})">个人中心</a></li>
+                                    <li><a href="@Url.Action("Logout","Home",new { loginurl=loginurl})">退出</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <!-- End of Main Navigation -->
+            </div>
+            <div class="aside-nav bounceInUp animated" id="aside-nav" style="z-index:9999">
+                <label for="" class="aside-menu" title="按住拖动">菜单</label>
+
+                <a href="@Url.Action("Publish", "KnowLedgePublish", new { area= "KonwledgeBackend"})" title="发布分享" class="menu-item menu-first">分享</a>
+                <a href="@Url.Action("QADetail", "QAPublish", new { area= "KonwledgeBackend"})" title="我要提问" class="menu-item menu-second">提问</a>
+                <a href="/" title="我要提问" class="menu-item menu-third">首页</a>
+                @*<a href="javascript:void(0)" title="一键预约" class="menu-item menu-third">预约</a>*@
+                @*<a href="javascript:void(0)" title="微信公众号" class="menu-item menu-line menu-fourth">关注<br>微信</a>  *跳到商家微信推广**@
+            </div>
+        </header>
+    </div>
+
+    <!-- Start of Search Wrapper -->
+
+    @RenderBody()
+    <footer id="footer-wrapper">
+        @*<div id="footer" class="container">
+            <div class="row">
+
+                <div class="span3">
+                    <section class="widget">
+                        <h3 class="title">运作机制</h3>
+                        <div class="textwidget">
+                            <p>
+                                知识库使用数据库来存放知识和文档,包括事实与规则.
+                                搜索模块实现知识库的知识搜索和与传递.一致性、完整性检查模块在知识库中的知识发生变动时对知识库中的知识进行一致性、完整性检查。
+                            </p>
+
+                        </div>
+                    </section>
+                </div>
+
+                <div class="span3">
+                    <section class="widget">
+                        <h3 class="title">分类</h3>
+                        <ul>
+                            <li><a href="/" title="Lorem ipsum dolor sit amet,">知识分享</a> </li>
+                            <li><a href="/" title="Lorem ipsum dolor sit amet,">你问我答</a></li>
+                            <li><a href="/" title="Lorem ipsum dolor sit amet,">常用链接</a></li>
+                            <li><a href="/" title="Lorem ipsum dolor sit amet, ">热门标签</a></li>
+                        </ul>
+                    </section>
+                </div>
+
+                <div class="span3">
+                    <section class="widget">
+                        <h3 class="title">团队</h3>
+                        <div id="twitter_update_list">
+                            <ul>
+                                <li>工业软件本部-制造系统开发科</li>
+                            </ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>*@
+        <!-- end of #footer -->
+        <!-- Footer Bottom -->
+        <div id="footer-bottom-wrapper">
+            <div id="footer-bottom" class="container">
+                <div class="row">
+                    <div class="span6">
+                        <p class="copyright">
+                            Copyright © 2018. BOE 知识库
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Footer Bottom -->
+    </footer>
+    @*<script src="~/lib/jquery/dist/jquery.min.js"></script>*@
+    <script src="~/lib/jquery/dist/jquery-2.1.4.min.js"></script>
+    <script src="~/js/fakeLoader.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/js/custom.js"></script>
+    <script src="~/lib/vue/vue.js"></script>
+    <script src="~/lib/layer/layer.js"></script>
+    <script src="~/js/retry.js"></script>
+    <script src="~/js/request.js"></script>
+    <script src="~/js/timeago.js"></script>
+    <script src="~/lib/pagination/common.js"></script>
+    <script src="~/lib/pagination/jquery.simplePagination.js"></script>
+    <script src="~/lib/jqueryuploadfile/jquery.form.js"></script>
+    @*<script src="~/lib/bootstrap-tagsinput/typeahead.bundle.min.js"></script>*@
+    <script src="~/lib/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+    <script src="~/lib/bootstrap-tagsinput/bootstrap-typeahead.js"></script>
+    <script src="~/js/menufloat.js"></script>
+    <script src="~/js/user.js"></script>
+    <script type="text/javascript">
+        Date.prototype.pattern = function (fmt) {
+            var o = {
+                "M+": this.getMonth() + 1, //月份
+                "d+": this.getDate(), //日
+                "h+": this.getHours() % 12 == 0 ? 12 : this.getHours() % 12, //小时
+                "H+": this.getHours(), //小时
+                "m+": this.getMinutes(), //分
+                "s+": this.getSeconds(), //秒
+                "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                "S": this.getMilliseconds() //毫秒
+            };
+            var week = {
+                "0": "\u65e5",
+                "1": "\u4e00",
+                "2": "\u4e8c",
+                "3": "\u4e09",
+                "4": "\u56db",
+                "5": "\u4e94",
+                "6": "\u516d"
+            };
+            if (/(y+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+            }
+            if (/(E+)/.test(fmt)) {
+                fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? "\u661f\u671f" : "\u5468") : "") + week[this.getDay() + ""]);
+            }
+            for (var k in o) {
+                if (new RegExp("(" + k + ")").test(fmt)) {
+                    fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                }
+            }
+            return fmt;
+        };
+    </script>
+
+    @*<script  type="module" src="~/js/api.js"></script>*@
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

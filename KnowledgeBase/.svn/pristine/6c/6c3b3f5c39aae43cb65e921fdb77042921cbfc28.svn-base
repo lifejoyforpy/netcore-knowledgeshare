@@ -1,0 +1,273 @@
+﻿
+@{
+    ViewData["Title"] = "QAPage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS
+    {
+    <link href="~/css/theme_styles.css" rel="stylesheet" />
+    <style>
+        .has_accept {
+            left: 20px;
+            height: 50px;
+            background: url('../../../../images/accept_icon.png') left center no-repeat;
+            overflow: hidden;
+            padding-left: 59px;
+            padding-top: 1px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #53ad7f;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .vote-accepted-on {
+            background-position: -40px -270px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        .vote span {
+            display: block;
+            color: #6a737c;
+            text-align: center
+        }
+
+        .vote-count-post {
+            font-size: 20px;
+        }
+
+        .vote-up-off {
+            height: 30px;
+            text-indent: -9999em;
+            font-size: 1px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            width: 40px;
+            margin-bottom: 2px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+
+        .vote-down-off {
+            height: 30px;
+            text-indent: -9999em;
+            font-size: 1px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            width: 40px;
+            margin-bottom: 2px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+
+        .innerform {
+            margin-left: 15px
+        }
+
+        .buttongroup {
+            text-align: center;
+            padding-top: 10px
+        }
+
+        .qatitle {
+            font-size: 20px;
+            line-height: 1.35;
+            font-weight: normal;
+            margin-bottom: .5em
+        }
+    </style>
+}
+<div class="page-container_my" id="qa">
+    <div class="container_my">
+        <div class="row">
+            <div class="col-lg-12">
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12" style="padding:10px 60px">
+                <div class="main-box clearfix" style="min-height: 700px;">
+                    @*<header class="main-box-header clearfix">
+                        <article class="type-page hentry clearfix">
+                            <h1 class="post-title">你问我答</h1>
+                            <hr>
+                        </article>
+                    </header>*@
+                    <div class="main-box-body clearfix">
+                        <div id="qadetail" class="row" style="padding:10px">
+
+                            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+
+                                <div class="qatitle" style="text-align:center">
+                                    <h2>{{QAInfo.title}}</h2>
+                                </div>
+                                <div v-html="QAInfo.content">
+                                </div>
+                            </div>
+                            <div class="email-attachments-content">
+                                <ul class="clearfix">
+                                    <li v-for="file in QAInfo.files">
+                                        <div class="img">
+                                            <i class="fa fa-file"></i>
+                                        </div>
+                                        <span class="name">
+                                            {{file.fileName}}
+                                        </span>
+                                        <a :href="file.fileId">View</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <h1 style="font-size:1.8em;color:#717070">{{Replys.length}}个回答</h1>
+                        <hr style="height: 1px;border-top: 1px dashed rgb(92, 96, 101);border-right: none;border-bottom: none;border-left: none;border-image: initial;" />
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class=" feed">
+                                    <div class="main-box-body clearfix" style="padding: 0px;">
+                                        <ul>
+                                            <li v-for="item in Replys">
+                                                <div v-if="(item.isBest===1)?'ok':''" class="has_accept">                                                
+                                                    已采纳
+                                                </div>
+                                                <div>
+                                                    <div class="img" style="float:left">
+                                                        <img src="~/images/george.png" />
+                                                    </div>
+                                                    <div class="title" style="line-height:30px">
+                                                        <a href="#">{{item.author}}</a> {{item.jobNum}}
+                                                    </div>
+                                                    <div class="post-time">
+                                                        {{item.createTime}}
+                                                    </div>
+                                                    <div class="time-ago">
+                                                        <i class="fa fa-clock-o"></i> {{item.createTime.getDateDiff()}}
+                                                    </div>
+                                                    <div style="display:grid;grid-template-columns:max-content 1fr">
+                                                        <div class="votecell post-layout--left" style="width:46px;grid-column:1">
+                                                            <div class="vote">
+                                                                <input type="hidden" name="_id_" value="50820935">
+                                                                <a v-on:click="Ding(item)" class="vote-up-off" style="background-position: 0 -170px;" title="顶">up vote</a>
+                                                                <span itemprop="upvoteCount" class="vote-count-post ">{{item.likes}}</span>
+                                                                <a v-on:click="Cai(item)" class="vote-down-off" style="background-position: 0 -220px;" title="踩">down vote</a>
+                                                                <span v-on:click="SetBest(item)" class="vote-accepted-on load-accepted-answer-date" style="width:40px;height:40px;display: none;" title="点击采纳此回答"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div style="grid-column:2;margin-left:15px">
+                                                            <div v-html="item.content">
+                                                            </div>
+                                                            <div class="email-attachments-content">
+                                                                <ul class="clearfix">
+                                                                    <li v-for="file in item.attachment">
+                                                                        <div class="img">
+                                                                            <i class="fa fa-file"></i>
+                                                                        </div>
+                                                                        <span class="name">
+                                                                            {{file.name}}
+                                                                        </span>
+                                                                        <a :href="file.id">View</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+
+
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <div>
+        <script>
+            var postGuid = '@ViewBag.postGuid';
+            var tempGuid = '@ViewBag.tempGuid';
+        var vm = new Vue({
+            // 选项
+            el: '#qa',
+            data: {
+                QAInfo: {},
+                Replys: {},
+                postGuid: postGuid
+            },
+            methods: {
+                init: function () {
+                    if (postGuid != '') {
+                        this.GetQAInfo(postGuid);
+                        this.GetReplys(postGuid);
+                    }                  
+                },                     
+                GetReplys: function (postGuid) {
+                    API.POST(
+                        '@Url.Action("GetReplys", "QAPublish")',
+                        {
+                            postGuid: postGuid,
+
+                        }).then(ret =>
+                        {
+                            this.Replys = ret;
+                        }).catch(ret => console.log('获取回复错误'));
+                },                
+                GetQAInfo: function (postGuid) {
+                     API.POST(
+                        '@Url.Action("GetQAInfo", "QAPublish")',
+                        {
+                            postGuid: postGuid,
+                        }).then(ret =>
+                        {
+                            tempGuid = ret.guid;
+                            this.QAInfo = ret;
+                         })
+                         .catch(ret => layer.alert('抱歉,加载失败'));
+
+                },
+                Ding: function (reply) {
+                     API.POST(
+                        '@Url.Action("Like", "QAPublish")',
+                        {
+                            replyid: reply.id,
+                            type:1
+                        }).then(ret =>
+                        {
+                            reply.likes++;
+                        })
+                         .catch(ret => layer.alert('抱歉,操作失败'));
+
+                },
+                Cai: function (reply) {
+                        API.POST(
+                        '@Url.Action("Like", "QAPublish")',
+                        {
+                            replyid: reply.id,
+                            type:2
+                        }).then(ret =>
+                        {
+                            reply.likes--;
+                        })
+                         .catch(ret => layer.alert('抱歉,操作失败'));
+
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            vm.init();
+        });
+        </script>
+    </div>
+}

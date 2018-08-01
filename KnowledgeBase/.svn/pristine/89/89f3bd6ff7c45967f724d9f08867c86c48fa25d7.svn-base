@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Boe.Sj.Domain\BoeSj.KnowledgeBase.Domain.csproj" />
+    <ProjectReference Include="..\Boe.Sj.Repository\BoeSj.KnowledgeBase.Repository.csproj" />
+    <ProjectReference Include="..\BoeSj.KnowledgeBase.Infrastructure\BoeSj.KnowledgeBase.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="6.2.2" />
+  </ItemGroup>
+
+</Project>

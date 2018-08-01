@@ -1,0 +1,11 @@
+﻿{
+  "ConnectionStrings": {
+    "MySqlConnection": "Server=10.22.10.101;Port=3306;Database=rptwh;Uid=boe;Pwd=boe888888;SSLMode=none"
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  }
+}

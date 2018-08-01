@@ -1,0 +1,78 @@
+﻿using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.DTO.Output;
+using BoeSj.KnowledgeBase.Application.DTO.OutPut;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using BoeSj.KnowledgeBase.Domain.Model.Search;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Web.Areas.KnowledgeFrontend.Controllers
+{
+    [Area("KnowledgeFrontend")]
+    public class KnowledegeShareController : Controller
+    {
+        ISearchApp _searchApp;
+        IFieldShareApp _fieldShareApp;
+        public KnowledegeShareController(ISearchApp searchApp, IFieldShareApp fieldShareApp) {
+
+            _searchApp = searchApp;
+            _fieldShareApp = fieldShareApp;
+        }
+        public IActionResult Details()
+        {
+            return View();
+        }
+
+        //列表页
+
+        public IActionResult KnowledegeShareList(string query)
+        {
+            //Response<List<post>> response = new Response<List<post>>();
+            //response=await _searchApp.SearchPostbyField(new SearchInput { Query = query });
+            ViewBag.data = query;
+            return View();
+        }
+
+        public async Task<IActionResult> Search(SearchInput input)
+        {
+
+            Response<List<post>> response = new Response<List<post>>();
+            response = await _searchApp.SearchPostbyField(input);
+            return new JsonResult(response);
+        }
+
+        public async Task<IActionResult> Suggest(SearchInput input)
+        {
+
+            Response<IEnumerable<SearchOutput>> response = new Response<IEnumerable<SearchOutput>>();
+            response = await _searchApp.IndexSuggestion(input);
+            return new JsonResult(response);
+
+        }
+
+        // hot suggest
+        public async Task<IActionResult> HotSuggest(SearchInput input)
+        {
+
+            Response<List<post>> response = new Response<List<post>>();
+            response = await _searchApp.HotSuggest(input);
+            return new JsonResult(response);
+
+        }
+
+        public async Task<IActionResult>  KnowledegeShareDetail(string id){
+
+            //Response<KnowledegeShareDetail> response = await _fieldShareApp.GetKnowledgeShareDetail(id);
+            ViewData["id"] = id;
+            return View();
+        }
+        public async Task<IActionResult> getDetails(string id)
+        {
+
+            Response<KnowledegeShareDetail> response = await _fieldShareApp.GetKnowledgeShareDetail(id);
+            return new JsonResult(response);
+        }
+    }
+}

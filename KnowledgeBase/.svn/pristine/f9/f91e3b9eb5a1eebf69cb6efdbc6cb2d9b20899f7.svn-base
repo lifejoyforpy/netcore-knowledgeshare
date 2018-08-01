@@ -1,0 +1,341 @@
+﻿
+@{
+    ViewData["Title"] = "KnowledegeShareDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var id = ViewData["id"];
+
+}
+@section CSS{
+    <style>
+        .data-info {
+            padding: 16px 10px;
+            border-bottom: 1px solid #e3e3e3;
+            height: 77px;
+            display: flex !important;
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .title {
+            padding: 16px 16px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .userinfo {
+            /*border: 1px solid #e9e6c4;*/
+            /*padding: 10px 100px 10px 0px;*/
+            background: #fefbdc;
+            margin-bottom: 20px;
+        }
+
+        .itemtiling {
+            width: 100%;
+        }
+
+        .spancss {
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .infoheader {
+            height: 70px;
+            text-align: left;
+        }
+
+        .email-attachments-content ul li {
+            background: none repeat scroll 0 0 #e7ebee;
+            border: 1px solid #e7ebee;
+            border-radius: 3px;
+            background-clip: padding-box;
+            float: left;
+            font-size: 0.875em;
+            margin: 10px 10px 10px 0;
+            overflow: hidden;
+            padding: 0;
+        }
+
+            .email-attachments-content ul li .img {
+                border-radius: 3px 3px 0 0;
+                background-clip: padding-box;
+                /* height: 87px; */
+                overflow: hidden;
+                /* width: 130px; */
+                text-align: center;
+            }
+
+            .email-attachments-content ul li > a {
+                text-align: center;
+                display: block;
+                padding: 0 6px 5px;
+            }
+
+        a {
+            color: #1ABC9C;
+            outline: none !important;
+        }
+    </style>
+
+
+
+
+}}
+<div id="detail">
+    <div class="page-container">
+        <div class="container">
+            <div class="row">
+                <!-- start of page content -->
+                <div class="col-md-8 page-content">
+
+                    <article class=" type-post format-standard hentry clearfix">
+
+                        <h1 class="post-title"><a href="#">{{details.title}}</a></h1>
+
+                        <div class="post-meta clearfix">
+                            <span class="date">{{details.createtime}}</span>
+                            <span class="category"><a href="#" title="View all posts in Server &amp; Database">{{details.category}}</a></span>
+                            <span class="comments"><a href="#" title="Comment on Integrating WordPress with Your Website">{{details.views}} Views</a></span>
+                            <span class="like-count">{{details.likes}}</span>
+                        </div><!-- end of post meta -->
+
+                        <div v-html="details.content">
+
+                        </div>
+                        <div class="email-attachments-content">
+                            <ul class="clearfix">
+                                <li v-for="file in fileinfo">
+                                    <div class="img">
+                                        <i class="fa fa-file"></i>
+                                    </div>
+                                    <span class="name">
+                                        {{file.fileName}}
+                                    </span>
+                                    <a :href="getUrl(file.fileId)">View</a>
+                                </li>
+                            </ul>
+                        </div>
+                       
+                    </article>
+
+                    <div class="like-btn">
+
+                        <div class="post-meta">
+                            <span class="like-it" v-on:click="Like">{{details.likes}}</span>
+                            @*<input type="hidden" name="post_id" value="99">
+                                <input type="hidden" name="action" value="like_it">*@
+                        </div>
+
+                        <span class="tags">
+                            <strong>Tags:&nbsp;&nbsp;</strong>
+                            <a rel="tag" v-for=" item in details.tag" v-bind:href="'@Url.Action("KnowledegeShareList","KnowledegeShare",new { area = "KnowledgeFrontend" })'+'?query='+ item">
+                                {{item}}
+                            </a>
+                        </span>
+
+                    </div>
+
+                </div>
+                <!-- end of page content -->
+                <!-- start of sidebar -->
+                <aside class="col-md-4 page-sidebar">
+
+                    <section class="widget">
+
+                        <div class="support-widget">
+                            <div class="infoheader">
+                                <h3 class="title">个人资料</h3>
+                                <span class="spancss">作者:</span>
+                                <span class="spancss"> admin </span>
+                            </div>
+                        </div>
+                        <div class="userinfo">
+                            <div class="data-info itemtiling">
+                                <dl class="text-center itemtiling" title="274">
+                                    <dt><span>厂别</span></dt>
+                                    <dd><span class="count">S01</span></dd>
+                                </dl>
+                                <dl class="text-center itemtiling" title="274">
+                                    <dt><span>部门</span></dt>
+                                    <dd><span class="count">IT</span></dd>
+                                </dl>
+                                <dl class="text-center itemtiling" title="274">
+                                    <dt><span>工号</span></dt>
+                                    <dd><span class="count">admin</span></dd>
+                                </dl>
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="widget">
+                        <h3 class="title">Featured Articles</h3>
+                        <ul class="articles">
+                            <li class="article-entry standard">
+                                <h4><a href="single.html">Integrating WordPress with Your Website</a></h4>
+                                <span class="article-meta">25 Feb, 2013 in <a href="#" title="View all posts in Server &amp; Database">Server &amp; Database</a></span>
+                                <span class="like-count">66</span>
+                            </li>
+                            <li class="article-entry standard">
+                                <h4><a href="single.html">WordPress Site Maintenance</a></h4>
+                                <span class="article-meta">24 Feb, 2013 in <a href="#" title="View all posts in Website Dev">Website Dev</a></span>
+                                <span class="like-count">15</span>
+                            </li>
+                            <li class="article-entry video">
+                                <h4><a href="single.html">Meta Tags in WordPress</a></h4>
+                                <span class="article-meta">23 Feb, 2013 in <a href="#" title="View all posts in Website Dev">Website Dev</a></span>
+                                <span class="like-count">8</span>
+                            </li>
+                            <li class="article-entry image">
+                                <h4><a href="single.html">WordPress in Your Language</a></h4>
+                                <span class="article-meta">22 Feb, 2013 in <a href="#" title="View all posts in Advanced Techniques">Advanced Techniques</a></span>
+                                <span class="like-count">6</span>
+                            </li>
+                        </ul>
+                    </section>
+
+
+
+                    <section class="widget">
+                        <h3 class="title">Categories</h3>
+                        <ul>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Advanced Techniques</a> </li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Designing in WordPress</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Server &amp; Database</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet, ">Theme Development</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Website Dev</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">WordPress for Beginners</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet, ">WordPress Plugins</a></li>
+                        </ul>
+                    </section>
+
+                    <section class="widget">
+                        <h3 class="title">Recent Comments</h3>
+                        <ul id="recentcomments">
+                            <li class="recentcomments"><a href="#" rel="external nofollow" class="url">John Doe</a> on <a href="#">Integrating WordPress with Your Website</a></li>
+                            <li class="recentcomments">saqib sarwar on <a href="#">Integrating WordPress with Your Website</a></li>
+                            <li class="recentcomments"><a href="#" rel="external nofollow" class="url">John Doe</a> on <a href="#">Integrating WordPress with Your Website</a></li>
+                            <li class="recentcomments"><a href="#" rel="external nofollow" class="url">Mr WordPress</a> on <a href="#">Installing WordPress</a></li>
+                        </ul>
+                    </section>
+
+                </aside>
+                <!-- end of sidebar -->
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/lib/summernote/summernote.min.js"></script>
+    <script src="~/lib/summernote/summernote-zh-CN.js"></script>
+    <script type="text/javascript">
+
+        var vm = new Vue({
+            el: '#detail',
+            data: {
+                details: [],
+                fileinfo:[]
+
+            },
+            props: {
+
+                 name:'123'
+
+            },
+            mounted: function () {
+                _this = this;
+                //初始化
+                  $.ajax({
+                        url:'/KonwledgeBackend/BackendManage/GetAtthchement',
+                        type: 'POST',
+                        data: { Id: '@id' },
+                        success: function (data) {
+                            if (data.status == '1') {
+                                vm.$data.fileinfo = data.data;                             
+                            }
+
+                        }
+
+                    });
+                $.ajax({
+                        url: "@Url.Action("getDetails", "KnowledegeShare", new {area= "KnowledgeFrontend" })",
+                        type: 'POST',
+                        async: false,
+                    data: { Id: '@id' },
+
+                        success: function (data) {
+                            if (data.status == '1') {
+
+                                _this.$data.details = data.data;
+
+                            }
+
+                        }
+
+                });
+                this.Views(_this);
+
+            },
+            methods: {
+
+                Views: function (_this) {
+
+
+                    //浏览数目增加
+                    _this.$data.details.views = _this.$data.details.views+1;
+                    $.ajax({
+                        url: "@Url.Action("addView", "KnowledegeShare", new {area= "KnowledgeFrontend" })",
+                        type: 'POST',
+                        data: _this.$data.details,
+                        success: function (data) {
+                            if (data.status == '1') {
+
+                                _this.$data.details = data.data;
+
+                            }
+
+                        }
+
+                    });
+                },
+
+                Like: function () {
+
+                     vm.$data.details.likes = vm.$data.details.likes + 1;
+                    $.ajax({
+                        url: "@Url.Action("addLike", "KnowledegeShare", new {area= "KnowledgeFrontend" })",
+                        type: 'POST',
+                        data: vm.$data.details,
+                        success: function (data) {
+                            if (data.status == '1') {
+
+                                vm.$data.details = data.data;
+
+                            }
+
+                        }
+
+                    });
+
+                },
+                dateformate: function (date) {
+
+                    var result = new Date(date.replace('T', " ")).pattern("yyyy-MM-dd HH:mm:ss")
+
+                    return result
+                },
+                getUrl: function (id) {
+
+                    return '/KonwledgeBackend/KnowLedgePublish/GetKnownHtml?id=' + id;
+                }
+                
+
+
+            }
+        });
+
+    </script>
+}

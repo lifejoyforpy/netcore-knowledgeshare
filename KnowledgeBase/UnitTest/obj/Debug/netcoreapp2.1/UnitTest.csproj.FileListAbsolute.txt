@@ -1,0 +1,17 @@
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\xunit.runner.reporters.netcoreapp10.dll
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\xunit.runner.utility.netcoreapp10.dll
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\UnitTest.deps.json
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\UnitTest.runtimeconfig.json
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\UnitTest.runtimeconfig.dev.json
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\UnitTest.dll
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\UnitTest.pdb
+E:\KnowledgeBase\UnitTest\obj\Debug\netcoreapp2.1\UnitTest.csprojAssemblyReference.cache
+E:\KnowledgeBase\UnitTest\obj\Debug\netcoreapp2.1\UnitTest.csproj.CoreCompileInputs.cache
+E:\KnowledgeBase\UnitTest\obj\Debug\netcoreapp2.1\UnitTest.AssemblyInfoInputs.cache
+E:\KnowledgeBase\UnitTest\obj\Debug\netcoreapp2.1\UnitTest.AssemblyInfo.cs
+E:\KnowledgeBase\UnitTest\obj\Debug\netcoreapp2.1\UnitTest.dll
+E:\KnowledgeBase\UnitTest\obj\Debug\netcoreapp2.1\UnitTest.pdb
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\SSOManagerLib.dll
+E:\KnowledgeBase\UnitTest\bin\Debug\netcoreapp2.1\SSOManagerLib.pdb
+E:\KnowledgeBase\UnitTest\obj\Debug\netcoreapp2.1\UnitTest.csproj.CopyComplete

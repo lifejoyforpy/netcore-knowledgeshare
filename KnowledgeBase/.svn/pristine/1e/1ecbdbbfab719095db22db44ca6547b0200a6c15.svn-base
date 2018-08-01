@@ -1,0 +1,41 @@
+﻿using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.DTO.Output;
+using BoeSj.KnowledgeBase.Domain.Model;
+using BoeSj.KnowledgeBase.Domain.Model.Mongo;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using BoeSj.KnowledgeBase.Domain.Model.Search;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Application.Interface
+{
+    public interface IQAPublishApp
+    {
+        Task<string> QASave(QAPublishInput input);
+
+        Task Publish(QAPublishInput input);
+
+        Task<QAInfoOutput> GetQAInfo(string guid);
+
+        Task Reply(QAPublishInput input);
+
+        Task<List<Reply>> GetReplys(string guid);
+
+        /// <summary>
+        /// 点赞
+        /// </summary>
+        /// <param name="guid"></param>
+        /// <param name="type">1：顶 2：踩</param>
+        /// <returns></returns>
+        Task Like(string guid, int type);
+        Task Delete(string guid);
+        Task<Response<string>> SetBest(string guid, string postguid);
+
+        Task SetState(string guid, int state, Func<QuestionsPublish, bool> func = null);
+
+        Task<SearchResult<QAInfoOutput>> GetMyQAList(string jobNum, int pageIndex, int pageSize);
+        Task<SearchResult<QAInfoOutput>> GetReplyQAList(string department, int pageIndex, int pageSize);
+        Task<SearchResult<QAInfoOutput>> GetMyDraftList(string jobNum, int pageIndex, int pageSize);
+    }
+}

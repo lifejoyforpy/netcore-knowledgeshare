@@ -1,0 +1,49 @@
+﻿using AutoMapper;
+using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Application.Service
+{
+    public class QAPublishApp : IQAPublishApp
+    {
+        private readonly IRepository<QuestionsPublish> _qpRepository;
+        private readonly IMapper _mapper;
+        public QAPublishApp(IRepository<QuestionsPublish> qpRepository, IMapper mapper)
+        {
+            _qpRepository = qpRepository;
+            _mapper = mapper;
+        }
+
+        public Task Publish(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task QASave(QAPublishInput input)
+        {            
+            if (input.Id==0)
+            {
+                var entity = _mapper.Map<QuestionsPublish>(input);
+                entity.CreateTime = DateTime.Now;
+                entity.State = 0;
+                entity.Guid = Guid.NewGuid().ToString();
+                entity.JobNum = "xxx";
+                entity.Author = "xxxname";
+                await _qpRepository.InsertAsync(entity);
+            }
+            else//修改
+            {
+                var entity = _qpRepository.GetByID(input.Id);
+                _mapper.Map(input, entity);
+                await _qpRepository.UpdateAsync(entity);
+            }
+            _qpRepository.SaveChanges();
+        }
+    }
+}

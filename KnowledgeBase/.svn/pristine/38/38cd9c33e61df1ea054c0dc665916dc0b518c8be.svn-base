@@ -1,0 +1,19 @@
+﻿using BoeSj.KnowledgeBase.Infrastructure.Mongo;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Domain.Model.Mongo
+{
+    public class Post: BaseModel
+    {
+        public string Title { get; set; }
+        public string Tag { get; set; }
+
+        public string Category { get; set; }
+
+        public string Content { get; set; }
+
+        public DateTime CreateTime { get; set; }
+    }
+}

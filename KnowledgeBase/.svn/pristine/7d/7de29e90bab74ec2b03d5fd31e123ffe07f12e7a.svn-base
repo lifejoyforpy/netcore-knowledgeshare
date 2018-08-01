@@ -1,0 +1,172 @@
+﻿using AutoMapper;
+using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.DTO.Output;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Application.Service
+{
+    public class CategoryService: ICategoryService
+    {
+        private IRepository<Category> _repository;
+        private IMapper _mapper;
+
+        public CategoryService(IRepository<Category> repository, IMapper mapper)
+        {
+            _repository = repository;
+            _mapper = mapper;
+        }
+
+        public async Task<Response<string>> CreateCategory(string parentid, string name)
+        {
+            var response = new Response<string>();
+            try
+            {
+                var guid = Guid.NewGuid().ToString();
+                await _repository.InsertAsync(new Category {Guid= guid, ParentGuid = parentid, CategoryName = name });
+                _repository.SaveChanges();
+
+                response.Data = guid;
+            }
+            catch (Exception ex)
+            {
+                response.Status = 0;
+                response.Msg = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<Response<CategoryTree2>> GetCategories2()
+        {
+            var response = new Response<CategoryTree2>();
+            try
+            {
+                var lists = await _repository.Get(null).ToListAsync();
+                response.Data = new CategoryTree2 { Id = "#", Text = "右键创建分类" };
+                LoopTrees(response.Data, lists);
+
+            }
+            catch (Exception ex)
+            {
+                response.Status = 0;
+                response.Msg = ex.Message;
+            }
+            
+            return response;
+        }
+
+
+
+        public async Task<List<CategoryTree>> GetCategoriesBy(string id, string flag)
+        {
+            var result = new List<CategoryTree>();
+            try
+            {
+                var lists = await _repository.Get(c => c.ParentGuid == id).ToListAsync();
+                if (!lists.Any() && !string.IsNullOrEmpty(flag))
+                {
+                    lists.Add(new Category { Guid = "", CategoryName = "请添加分类", CategoryDescription = "", ParentGuid = "" });
+                }
+
+                result = _mapper.Map<List<CategoryTree>>(lists);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+
+            return result;
+        }
+
+        public async Task<Response<bool>> RemoveCategory(string id)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                await Task.Run(async ()=>  {
+                    var ent = await _repository.Get(c => c.Guid == id).FirstOrDefaultAsync();
+                    _repository.Delete(ent);
+                    _repository.SaveChanges();
+                }) ;
+            }
+            catch (Exception ex)
+            {
+                response.Status = 0;
+                response.Msg = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<Response<bool>> RenameCategory(string id, string name)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                var ent = await _repository.Get(c => c.Guid == id).FirstOrDefaultAsync();
+                if (ent != null)
+                {
+                    ent.CategoryName = name;
+                    await _repository.UpdateAsync(ent);
+                    _repository.SaveChanges();
+                }
+                else
+                {
+                    response.Status = 0;
+                    response.Msg = "分类未找到";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Status = 0;
+                response.Msg = ex.Message;
+            }
+
+            return response;
+        }
+
+        public async Task<Response<bool>> UpdateSettings(CategoryDto dto)
+        {
+            var response = new Response<bool>();
+            try
+            {
+                var ent = _mapper.Map<Category>(dto);
+                await _repository.UpdateAsync(ent);
+                _repository.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                response.Status = 0;
+                response.Msg = ex.Message;
+            }
+
+            return response;
+        }
+
+        private void LoopTrees(CategoryTree2 returnTree, List<Category> categories)
+        {
+            var subs = categories.FindAll(f=>f.ParentGuid==returnTree.Id).Select(s => new CategoryTree2 {
+                Id=s.Guid, Text =s.CategoryName, State=new State {
+                    CategoryDescription=s.CategoryDescription, Departments=s.Departments, Id=s.Id
+                }
+            }).ToList();
+
+            returnTree.Children.AddRange(subs);
+
+            foreach (var item in subs)
+            {
+                LoopTrees(item, categories);
+            }
+        }
+    }
+}

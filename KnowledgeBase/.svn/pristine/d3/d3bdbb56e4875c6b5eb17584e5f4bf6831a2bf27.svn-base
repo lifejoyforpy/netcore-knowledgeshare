@@ -1,0 +1,27 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Details</title>
+</head>
+<body>
+    <p>2132132112321312312nmm</p>
+</body>
+
+
+</html>
+<script type="text/javascript">
+    vue = new Vue(
+     {
+           
+
+     }
+    )
+
+</script>

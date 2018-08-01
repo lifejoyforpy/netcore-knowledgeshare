@@ -1,0 +1,63 @@
+﻿using BoeSj.KnowledgeBase.Application.Interface;
+using KnowledgeBase.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SSOManagerLib;
+using System.Diagnostics;
+using System.Threading.Tasks;
+
+namespace KnowledgeBase.Controllers
+{
+    public class HomeController : Controller
+    {
+        private ITestApp _testApp;
+        private SSOHelper _ssoHelper;
+
+        public HomeController(ITestApp testApp, SSOHelper sSOHelper)
+        {
+            _testApp = testApp;
+            _ssoHelper = sSOHelper;
+        }
+
+        public IActionResult Index()
+        {
+            //var ent = new BiAuth_Role { RoleName = "我来测试", RoleType = 100, CheckStatus = 3, CheckNote = "", UseStatus = 1, DataFlag = 0, Created_By = "", Created_By_Id = "", Created_Time = DateTime.Now,
+            //    Last_Modify_By = "", Last_Modify_By_Id = "", Last_Modify_Time = DateTime.Now, Guid = "" };
+            //_testApp.Save(ent);
+            return View();
+        }
+
+        public IActionResult About()
+        {
+            ViewData["Message"] = "Your application description page.";
+
+            return View();
+        }
+
+        public IActionResult Contact()
+        {
+            ViewData["Message"] = "Your contact page.";
+
+            return View();
+        }
+
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult Forbidden()
+        {
+            return View();
+        }
+
+        [NoAthorize]
+        public async Task<IActionResult> Logout(string loginurl)
+        {
+            var token = HttpContext.Session.GetString("token");
+            await _ssoHelper.RemoveToekn(token);
+            HttpContext.Session.Clear();
+            return Redirect(loginurl);
+        }
+    }
+}

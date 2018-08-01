@@ -1,0 +1,179 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@section CSS{
+    <style>
+        .view-c {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            line-height: 18px;
+            font-weight: 600;
+            padding: 3px 5px 3px 5px;
+            /*border: 1px solid #f2f2f2;*/
+            border-bottom: none;
+            /*background: url("../images/like.png") no-repeat 6px 8px;*/
+        }
+    </style>
+        }
+<div id="index">
+    <div class="search-area-wrapper">
+        <div class="search-area container ">
+            <h3 class="search-header">查一查?</h3>
+            <p class="search-tag-line">If you have any question you can ask below or enter what you are looking for!</p>
+            <form id="search-form" class="search-form clearfix" method="get" autocomplete="off">
+                <input class="search-term required" type="text" id="s" name="s" placeholder="Type your search terms here" title="* Please enter a search term!" v-model="search" />
+                <input class="search-btn" type="button" value="Search" v-on:click="find" />
+                <div id="search-error-container"></div>
+            </form>
+        </div>
+    </div>
+    <div class="page-container">
+        <div class="container">
+            <div class="row">
+
+                <!-- start of page content -->
+                <div class="col-md-8 col-sm-8 page-content">
+
+                    <!-- Basic Home Page Template -->
+                    <div class="row separator">
+                        <section class="col-md-6 col-sm-6 articles-list">
+                            <h3>
+                                <i class="fa fa-share-alt" aria-hidden="true"></i> 知识分享
+                                <span class="pull-right" ><a  style="font-size:13px;color:#6f7579"  href="@Url.Action("KnowledegeShareDetail","KnowledegeShare",new { area = "KnowledgeFrontend"})">更多...</a></span>
+                            </h3>
+                            <ul class="articles">
+                                <li class="article-entry standard" v-for="item in knowledgelist">
+                                    <h4>
+                                        <a v-bind:href="'@Url.Action("KnowledegeShareDetail","KnowledegeShare",new { area = "KnowledgeFrontend"})'+ '?id=' + item.postGuid">{{stringformate(item.title)}}</a>
+                                    </h4>
+                                    <span class="article-meta">{{item.createTime}}</span>
+                                    <span class="view-c">
+                                        <i class="fa fa-eye" aria-hidden="true"></i> {{item.views}}
+                                        <i class="fa fa-thumbs-up" aria-hidden="true"></i> {{item.likes}}
+                                    </span>
+                                    @*<span class="like-c"><i class="fa fa-thumbs-up" aria-hidden="true"></i> {{item.likes}}</span>*@
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section class="col-md-6 col-sm-6 articles-list">
+                            <h3>
+                                <i class="fa fa-question-circle" aria-hidden="true"></i> 你问我答
+                                <span class="pull-right"><a style="font-size:13px;color:#6f7579" href="@Url.Action("KnowledegeShareDetail","KnowledegeShare",new { area = "KnowledgeFrontend"})">更多...</a></span>
+                            </h3>
+                            <ul class="articles">
+                                <li class="article-entry standard" v-for="item in qalist">
+                                    <h4>
+                                        <a v-bind:href="'@Url.Action("KnowledgeQADetail","KnowledegeShare",new { area = "KnowledgeFrontend"})'+ '?id=' + item.postGuid">{{stringformate(item.title)}}</a>
+                                    </h4>
+                                    <span class="article-meta">{{item.createTime}}</span>
+                                    <span class="view-c">
+                                        <i class="fa fa-eye" aria-hidden="true"></i> {{item.views}}
+                                        <i class="fa fa-thumbs-up" aria-hidden="true"></i> {{item.likes}}
+                                    </span>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                </div>
+                <!-- end of page content -->
+                <!-- start of sidebar -->
+                <div class="col-md-4 col-sm-4 page-sidebar">
+                    <section class="widget">
+                        <h3 class="title">热门标签</h3>
+                        <div class="tagcloud">
+                            <a v-bind:href="'@Url.Action("KnowledegeShareList", "KnowledegeShare",new { Area="KnowledgeFrontend"})'+'?query='+item" v-for="item in tags" class="btn btn-mini">{{item}}</a>
+                        </div>
+                    </section>
+                    <section class="widget" style="margin-top:20px">
+                        <div class="quick-links-widget">
+                            <h3 class="title">常用链接</h3>
+                            <ul id="menu-quick-links" class="menu clearfix">
+                                <li><a href="http://portal.boe.com.cn" target="_Blank">Portal</a></li>
+                                <li><a href="https://mail.boe.com.cn/coremail/" target="_Blank">Boe邮箱</a></li>
+                                <li><a href="http://10.22.10.102:9001" target="_Blank">生计中心</a></li>
+                                <li><a href="http://10.22.10.102:8125" target="_Blank">透明工厂</a></li>
+                            </ul>
+                        </div>
+                    </section>
+                    <section class="widget" style="margin-top:20px">
+                        <div class="support-widget">
+                            <h3 class="title">帮助</h3>
+                            <p class="intro">如有问题，请联系管理员.</p>
+                        </div>
+                    </section>
+                </div>
+                <!-- end of sidebar -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+        var vm = new Vue({
+            el:'#index',
+            data: {
+                knowledgelist: [],
+                qalist: [],
+                tags: [],
+                search: "消息"
+            },
+            methods: {
+                find: function () {
+                      API.POST(
+                        '@Url.Action("Search", "Home")',
+                        {
+                            query: vm.$data.search
+
+                        }).then(ret =>
+                        {
+                            location.href = ret;
+                            //this.Replys = ret;
+                        }).catch(ret => console.log('获取回复错误'));
+                },
+
+                stringformate: function (str) {
+                    var result = str.length > 20 ? str.substr(0,20)+'...' : str;
+                    return result
+                },
+                init: function () {
+                    API.POST(
+                        '@Url.Action("HotSuggest", "KnowledegeShare", new { area = "KnowledgeFrontend" })',
+                        {
+                            Type: 0,
+
+                        }).then(r => {
+                            //console.log(r)
+                            vm.knowledgelist = r;
+
+                        }).catch(ret => layer.msg("获取数据失败..."));
+                    API.POST(
+                        '@Url.Action("HotSuggest", "KnowledegeShare", new { area = "KnowledgeFrontend" })',
+                        {
+                            Type: 1
+                        }).then(r => {
+                            vm.qalist = r;
+                        }).catch(ret => layer.msg("获取数据失败..."));
+
+                    API.GET(
+                        '@Url.Action("GetTopTags", "Home")').then(r => {
+                            //console.log(r)
+                            vm.tags = r;
+
+                        }).catch(ret => layer.msg("获取数据失败..."));
+
+                }
+            }
+
+        });
+        $(function () {
+            vm.init();
+        });
+    </script>
+
+}

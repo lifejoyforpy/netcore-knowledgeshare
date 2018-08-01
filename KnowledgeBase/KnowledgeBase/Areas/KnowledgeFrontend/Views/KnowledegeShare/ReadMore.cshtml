@@ -1,0 +1,229 @@
+﻿
+@{
+    ViewData["Title"] = "ReadMore";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var type = ViewBag.Type;
+}
+@section CSS
+    {
+    <link href="~/css/csdn.css" rel="stylesheet" />
+    <link href="~/lib/jstree/themes/default/style.min.css" rel="stylesheet" />
+    <link href="~/css/csdn_feed.css" rel="stylesheet" />
+    <style>
+        .btn-meau {
+            height: 44px;
+            background-color: #ccc;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+        }
+    </style>
+}
+
+<div id="readmore" class="row row-offcanvas row-offcanvas-right main-wrapper" style="padding-left:100px;padding-right:100px;padding-top:20px;padding-bottom:20px">
+    <div class="col-6 col-md-2 sidebar-offcanvas" id="sidebar">
+        <div class="list-group-item list-group-title">
+            <span for="demo_q">分类</span>
+            <input type="text" value="" class="search" id="demo_q" placeholder="分类检索" />
+        </div>
+        <div class="list-group">
+            <div id="categorytree" class="" style="margin-top:1em; min-height:200px;color:#555"></div>
+        </div>
+    </div>
+    <div class="col-12 col-md-10" id="content-body">
+        <main>
+            <ul class="feedlist_mod career" id="more">
+                <li class="clearfix" data-type="top" v-for="item in categories" data-id="80991660">
+                    <div class="list_con">
+                        <div class="title">
+                            <h2>
+                                <a v-if="@type==0" v-bind:href="'@Url.Action("KnowledegeShareDetail","KnowledegeShare",new { area = "KnowledgeFrontend"})'+ '?id=' + item.postGuid" target="_blank">
+                                    {{item.title}}
+                                </a>
+                                <a v-else v-bind:href="'@Url.Action("KnowledgeQADetail","KnowledegeShare",new { area = "KnowledgeFrontend"})'+ '?id=' + item.postGuid" target="_blank">
+                                    {{item.title}}
+                                </a>
+                            </h2>
+                        </div>
+                        @*<div class="summary oneline">
+                            当今技术的发展日新月异，系统架构也跟随技术的发展不断升级和改进，从传统的单一架构演变为如今的微服务分布式架构，我们来看看技术架构的演变过程。
+                        </div>*@
+                        <dl class="list_userbar">
+                            <dt>
+                                <a href="#" class="user_img">
+                                    @*<img src="~/images/category-icon.png" />*@
+                                    <img src="~/images/favicon.png" />
+                                </a>
+                            </dt>
+                            <dd class="name">
+                                <a href="" target="_blank" v-for="tag in item.suggesttag.split(',')" v-bind:href="'@Url.Action("KnowledegeShareList", "KnowledegeShare",new { Area="KnowledgeFrontend"})'+'?query='+tag">
+                                    {{tag}}
+                                </a>
+                            </dd>
+                            <div class="interval"></div>
+                            <dd class="time">
+                                {{formatdate(item.creatTime)}}
+                            </dd>
+                            <div class="interactive floatR">
+                                <!--阅读 begin-->
+                                <dd class="read_num">
+                                    <a href="#">
+                                        <span class="num">{{item.views}}</span>
+                                        <span class="text">阅读</span>
+                                    </a>
+                                </dd>
+                                <div class="interval"></div>
+                                <dd class="common_num ">
+                                    <a href="#">
+                                        <span class="num">{{item.likes}}</span> <span class="text">赞</span>
+                                    </a>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </li>
+            </ul>
+
+        </main>
+
+    </div>
+    <div style="right: 10px; bottom: 40px; z-index: 110;position: fixed;">
+        <a href="#" id="backtop" class="btn-meau" title="返回顶部" style="display: flex;width: 44px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="19" height="12">
+                <path d="M9.314 0l9.313 9.314-2.12 2.121-7.193-7.192-7.193 7.192L0 9.314z" fill="#FFF" fill-rule="evenodd"></path>
+            </svg>
+        </a>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/lib/jstree/jstree321.min.js"></script>
+    <script>
+        var vm = new Vue({
+            el:'#readmore',
+            data: {
+                categories: [],
+                pageindex: 1,
+                pagenum: 5,
+                totals: 0,
+                chosedcategory:""
+            },
+            methods: {
+                formatdate: function (enddate) { 
+                    var diff = Math.round(parseInt(new Date() - new Date(enddate)) / 1000 / 60 / 60);
+                    if (diff<24) {
+                        return diff + "小时前";
+                    }
+                    return enddate;
+                },
+                getdata: function () {
+                      API.POST(
+                        '@Url.Action("SearchByCategory", "Stage", new { area = "KonwledgeBackend" })',
+                          {
+                              "type": @type, "category": vm.chosedcategory, "pageIndex": vm.pageindex, "pageSize": vm.pagenum
+                        }).then(ret =>
+                        {
+                            //vm.categories = ret.results;
+                            $.each(ret.results, function (index, item) { 
+                                vm.categories.push(item);
+                            })
+                            //Array.prototype.push.apply(vm.categories, ret.results);  
+                            //$.merge(vm.categories, ret.results); 
+                            //console.log(vm.categories)
+                            vm.totals = ret.total;
+                            if (vm.totals==0) {
+                                layer.msg("暂无数据...")
+                            }
+                          }).catch(ret => layer.msg('异常无数据...请重新获取'));
+                },
+                init: function () {
+                    API.POST(
+                        '@Url.Action("GetCategories2", "Category", new { area = "KonwledgeBackend" })').then(r => {
+                            var to = false;
+                            $('#demo_q').keyup(function () {
+                                if (to) { clearTimeout(to); }
+                                to = setTimeout(function () {
+                                    var v = $('#demo_q').val();
+                                    $('#categorytree').jstree(true).search(v);
+                                }, 250);
+                            });
+                            //console.log(r.children[0])
+                            if (r.children[0]) {
+                                vm.chosedcategory = r.children[0].id;
+                            }
+                            $('#categorytree').jstree({
+                                "core": {
+                                    "animation": 0,
+                                    'force_text': true,
+                                    "themes": {
+                                        "dots": false
+                                    },
+                                    'data':[r]
+                                },
+                                "types": {
+                                    "default": {
+                                        "icon": "hide"
+                                    },
+                                },
+                                "plugins": [
+                                    "search",
+                                    "state",
+                                    "types",
+                                    "wholerow"
+                                ]
+                            }).on("select_node.jstree", function (e, data) {
+                                //console.log(data.node.id)
+                                vm.categories = [];
+                                vm.chosedcategory = data.node.id;
+                                vm.getdata();
+                                });
+
+                            //vm.getdata();
+
+                        }).catch(ret => layer.msg("获取分类数据失败..."));
+
+                    
+                }
+            }
+
+        });
+        $(function () {
+            vm.init();
+            $(window).scroll(function () {
+                //var winH = $(window).height(); //页面可视区域高度
+                //var pageH = $(document).height();
+                //var scrollT = $(window).scrollTop(); //滚动条top
+                //var aa = pageH - winH - scrollT;//pageH - winH - scrollT;
+
+                //if (aa <= 0 && vm.totals > vm.pageindex * vm.pagenum) {
+                    
+                //    vm.pageindex++;
+                //    vm.getdata();
+                    
+                //}
+
+                var scrollTop = $(window).scrollTop();             // 滚动条距离顶部的高度
+                //scrollHeight,windowHeight,scrollHeight1三个height相同，都是这个页面的高度
+                var scrollHeight = $(document).height();          // 当前页面的总高度
+                //var windowHeight = $(window).height();            // 当前可视的页面高度，jquery获取的不是屏幕的高度，而是整个文档的高度
+                //var scrollHeight1 = $("#content-body").get(0).scrollHeight;
+
+                //var windowidth = $(window).width();
+                //var documentwidtht = $(document).width();
+
+                var innerHeight = window.innerHeight; //window的高度，即手机的高度
+                //var clientHeight = document.body.clientHeight; //window的高度
+                //var clientHeight1 = document.documentElement.clientHeight;//这个是body的整个高度，chrom测试
+
+                //console.log(scrollHeight - $(window).height() - scrollTop);
+                if (scrollTop + innerHeight >= scrollHeight && vm.totals > vm.pageindex * vm.pagenum) {        // 距离顶部+当前高度 >=文档总高度，即代表滑动到底部
+                    console.log("到底了。。。")
+                    vm.pageindex++;
+                    vm.getdata();
+                }
+            });
+
+        });
+    </script>
+}

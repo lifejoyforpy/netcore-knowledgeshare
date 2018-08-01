@@ -1,0 +1,20 @@
+﻿using AutoMapper;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Web.AutoMapper
+{
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            // ent to dto
+            //CreateMap<xx, xxDto>();
+
+            //dto to ent
+            //CreateMap<xxDto, xx>();
+        }
+    }
+}

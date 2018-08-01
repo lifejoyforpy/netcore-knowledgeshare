@@ -1,0 +1,16 @@
+E:\KnowledgeBase\KnowledgeBase
+--output-path=obj\Release\netcoreapp2.0\
+--application-name=BoeSj.KnowledgeBase.Web
+--content-root=E:\KnowledgeBase\KnowledgeBase
+--file=E:\KnowledgeBase\KnowledgeBase\Areas\KonwledgeBackend\Views\BackendManage\Details.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Areas\KonwledgeBackend\Views\KnowLedgePublish\Publish.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Areas\KonwledgeBackend\Views\QAPublish\QADetail.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\Home\About.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\Home\Contact.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\Home\Index.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\QA\QADetail.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\Shared\Error.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\Shared\_Layout.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\Shared\_ValidationScriptsPartial.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\_ViewImports.cshtml
+--file=E:\KnowledgeBase\KnowledgeBase\Views\_ViewStart.cshtml

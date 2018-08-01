@@ -1,0 +1,14 @@
+E:\KnowledgeBase\Boe.Sj.Repository\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.deps.json
+E:\KnowledgeBase\Boe.Sj.Repository\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.dll
+E:\KnowledgeBase\Boe.Sj.Repository\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.pdb
+E:\KnowledgeBase\Boe.Sj.Repository\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.dll
+E:\KnowledgeBase\Boe.Sj.Repository\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.dll
+E:\KnowledgeBase\Boe.Sj.Repository\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.pdb
+E:\KnowledgeBase\Boe.Sj.Repository\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.pdb
+E:\KnowledgeBase\Boe.Sj.Repository\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.csprojResolveAssemblyReference.cache
+E:\KnowledgeBase\Boe.Sj.Repository\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.csproj.CoreCompileInputs.cache
+E:\KnowledgeBase\Boe.Sj.Repository\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.AssemblyInfoInputs.cache
+E:\KnowledgeBase\Boe.Sj.Repository\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.AssemblyInfo.cs
+E:\KnowledgeBase\Boe.Sj.Repository\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.csproj.CopyComplete
+E:\KnowledgeBase\Boe.Sj.Repository\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.dll
+E:\KnowledgeBase\Boe.Sj.Repository\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Repository.pdb

@@ -1,0 +1,12 @@
+﻿{
+  "ConnectionStrings": {
+    "MySqlConnection": "Server=10.22.10.101;Port=3306;Database=knowledgebase;Uid=boe;Pwd=boe888888;",
+    "MongoConnection": "mongodb://10.22.10.101"
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  }
+}

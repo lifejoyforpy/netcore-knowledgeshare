@@ -1,0 +1,9 @@
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\bin\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.deps.json
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\bin\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.dll
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\bin\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.pdb
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\obj\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.csproj.CoreCompileInputs.cache
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\obj\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.AssemblyInfoInputs.cache
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\obj\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.AssemblyInfo.cs
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\obj\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.dll
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\obj\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.pdb
+E:\KnowledgeBase\BoeSj.KnowledgeBase.Infrastructure\obj\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Infrastructure.csprojAssemblyReference.cache

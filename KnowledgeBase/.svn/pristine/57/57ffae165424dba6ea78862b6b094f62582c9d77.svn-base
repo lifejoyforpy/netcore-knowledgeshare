@@ -1,0 +1,334 @@
+﻿@{
+    ViewData["Title"] = "KnowledegeShareList";
+    var flag = ViewBag.data;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS{
+    <style>
+        .searcharea {
+            background: #353b65 url('../../../../images/main-bg.jpg') center top no-repeat;
+            background-size: 100%;
+            height: 105px;
+            /* height: 205px; */
+        }
+
+        .navlist {
+            float: left;
+            /*width: 96px;*/
+            background-color: #fff;
+            margin-top: 40px;
+            margin-left: 14px;
+            margin-right: 14px;
+            text-align: left;
+            line-height: 32px;
+            position: relative;
+            padding: 6px 0;
+            -webkit-box-shadow: 0 1px 2px 0 rgba(0,0,0,0.04);
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.04);
+            border: 1px solid #d7d9dc;
+        }
+        .bdsug {
+            position: absolute;
+            list-style: none;
+            margin-left: 99px;
+            background-color: white;
+           
+            width: 60.9%;
+            z-index: 2000;
+            border: 1px solid #ccc;
+        }
+        ul {
+            margin: 0px;
+        }
+         li:hover {
+                background-color: gray;
+            }
+        .tli {
+            list-style: none;
+            margin: 0;
+            padding-left: 20px;
+            font-size: 15px;
+            font-family: "微软雅黑";
+            color: #040404;
+            text-align: left;
+        }
+        .static {
+            display: none
+        }
+
+        .active {
+            display: block
+        }
+        a {
+            font-family: "微软雅黑";
+            color: #040404;
+        }
+        .commentcss {
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
+            line-height: 18px;
+            font-weight: 600;
+            padding: 3px 5px 3px 20px;
+            border: 1px solid #f2f2f2;
+            border-bottom: none;
+            background: url(../../../../images/comment.png) no-repeat left center;
+        }
+
+    </style>
+}
+
+<div id="frontlist">
+    <div class="searcharea">
+        <div class="search-area container ">
+            <form id="search-form" class="search-form clearfix" method="get" autocomplete="off">
+                <input class="search-term required" type="text"      v-on:keyup ="suggest" id="s" name="s"  v-model="search"   />
+                <input class="search-btn" type="button" value="Search" v-on:click="getData(1,1)" />
+                <div class="bdsug static"   v-bind:class="{ active: isActive}" >
+                    <ul >
+                        <li   class="tli" v-for="item ,index in suggestlist"     v-on:click="select(item.suggesttag)">
+                            {{item.suggesttag}}
+                        </li>
+                    </ul>
+                </div>
+                <div id="search-error-container"></div>
+            </form>
+        </div>
+    </div>
+    <div class="page-container">
+        <div class="container">
+            <div class="row" id="search-list">
+                <!-- start of page content -->
+                <div class="col-md-8 col-sm-8  main-listing">
+                    <!-- Basic Home Page Template -->
+
+                    <article class="format-standard type-post hentry clearfix" v-for="item in list">
+                        <header class="clearfix">
+                            <h3  class="post-title">
+                                <a v-bind:href="urlcompute(item.postGuid,item.type)">{{item.title}}</a>
+                            </h3>
+                            <div class="post-meta clearfix">
+                                <span class="date">{{item.createTime}}</span>
+                                <span class="category"><a href="#" title="View all posts in Server &amp; Database">{{categorytype(item.type)}}</a></span>
+                                <span class="comments"><a href="#" title="Comment on Integrating WordPress with Your Website">{{item.views}} Views</a></span>
+                                <span class="like-count">{{item.likes}}</span>
+                            </div><!-- end of post meta -->
+                        </header>
+                        <div id="content" v-html="item.summary"></div>
+                    </article>
+                    <div class="ibox-footer pagenation">
+                        <div class="row">
+                            <div class="col-md-3 col-sm-12 ">总计{{ totalCount || 0 }}条，每页显示{{ pageSize || 5 }}条</div>
+                            <div class="col-md-9 col-sm-12 text-right" id="Pagination">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end of page content -->
+                <!-- start of sidebar -->
+                <div class="col-md-4 col-sm-4 page-sidebar">
+                   
+
+         
+                    <section class="widget">                       
+                            <h3 class="title">热门推荐</h3>
+                            <ul class="articles">
+                                <li class="article-entry standard" v-for="item in hotlist">
+                                    <h4><a v-bind:href="urlcompute(item.postGuid,item.type)">{{item.title}}</a></h4>
+                                    <span class="article-meta">{{item.createTime}} <a href="#" title="View all posts in Server &amp; Database">{{categorytype(item.type)}}</a></span>
+                                    <span class="commentcss">{{item.views}}</span>
+                                </li>
+                              
+                            </ul>
+                        
+                    </section>
+                
+                </div>
+                <!-- end of sidebar -->
+            </div>
+        </div>
+    </div>
+</div>>
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+        var vm = new Vue({
+            el:'#frontlist',
+            data: {
+                list: [],
+                JobNum: '1011',
+                pageSize: 10,
+                totalCount: 0,
+                search: "@Html.Raw(@flag)",
+                suggestlist: [],
+                isActive: false,
+                type: 0,
+                hotlist:[]
+            },
+            computed: {
+
+
+            },
+            methods: {
+
+                init: function () {
+                    console.log("@Html.Raw(@flag)");
+                   // vm.$data.search= "@Html.Raw(@flag)";
+                    $("#s").text("@Html.Raw(@flag)");
+                    vm.getData(1, 1);
+                },
+                pageInit: function () {
+                    var self = this;
+                    new PluginReset('simplePagination', "#Pagination", {
+                        itemsOnPage: self.pageSize,
+                        items: self.totalCount,
+                        onPageClick: function (page, event) {
+                            self.getData(page);
+                        }
+                    });
+                },
+                getData: function (page, _isInit) {
+                    $("#fakeLoader").fakeLoader({ spinner: "spinner2" });
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("Search", "KnowledegeShare", new { area = "KnowledgeFrontend" })",
+                        data: {
+                            Query: vm.$data.search,
+                            PageSize: vm.$data.pageSize,
+                            PageIndex: page,
+                        },
+                        success: function (result) {
+                            $("#fakeLoader").fakeHide();
+                            if (result.status == "1") {
+                                vm.$data.totalCount = result.totalCount;
+                                vm.$data.list = result.data;
+                                if (_isInit)
+                                    vm.pageInit();
+                            }
+                            else {
+                                console.log("服务器内部异常")
+                                $("#fakeLoader").fakeHide();
+                            }
+                        },
+                        error: function (e) {
+                            $("#fakeLoader").fakeHide();
+                        }
+                    });
+                  
+                },
+
+                dateformate: function (date) {
+
+                    var result = new Date(date.replace('T', " ")).pattern("yyyy-MM-dd HH:mm:ss")
+                    return result
+                },
+               
+                categorytype: function (type) { 
+                    var categorytype="问答";
+                    if (type == 0 || type == '0' ) { 
+
+                        categorytype="知识分享";
+
+                    }
+                    return categorytype
+
+                },
+                urlcompute:function(guid, type) {
+                    if (type == 0 || type == '0') {
+
+
+                        return ('@Url.Action("KnowledegeShareDetail","KnowledegeShare",new { area = "KnowledgeFrontend"})' + '?id=' + guid)
+                    }
+                    else { 
+                         return ('@Url.Action("KnowledgeQADetail", "KnowledegeShare",new { area = "KnowledgeFrontend"})' + '?id=' + guid)
+                    }
+
+                },
+                //inputfocus :function() { 
+
+                //    vm.$data.isActive = true;
+
+                //},
+                select: function (value) { 
+
+                    vm.$data.isActive = false;
+                    vm.$data.search = value;
+                    vm.getData(1, 1);
+                    console.log(value);
+
+
+                },
+                lifocus: function () { 
+
+                    console.log("focus");
+                   
+                },
+                suggest: function () { 
+                    if ($.trim(vm.$data.search) == "") { 
+                        vm.$data.isActive = false;
+                        return;
+
+                    }
+                      $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("Suggest", "KnowledegeShare", new { area = "KnowledgeFrontend" })",
+                        data: {
+                            Query: vm.$data.search
+                        },
+                        success: function (result) {
+                            //$("#fakeLoader").fakeHide();
+                            if (result.status == "1") {
+                                vm.$data.isActive = true;
+                                vm.$data.suggestlist = result.data;
+                            }
+                            else {
+                                console.log("服务器内部异常")
+                                $("#fakeLoader").fakeHide();
+                            }
+                        },
+                        error: function (e) {
+                            $("#fakeLoader").fakeHide();
+                        }
+                    });
+
+                },
+                hotsuggest: function () { 
+
+                      $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("HotSuggest", "KnowledegeShare", new { area = "KnowledgeFrontend" })",
+                          data: {
+                              Type: vm.$data.type
+                        },
+                        success: function (result) {
+                            //$("#fakeLoader").fakeHide();
+                            if (result.status == "1") {
+                            
+                                vm.$data.hotlist = result.data;
+                            }
+                            else {
+                                console.log("服务器内部异常")
+                                $("#fakeLoader").fakeHide();
+                            }
+                        },
+                        error: function (e) {
+                            $("#fakeLoader").fakeHide();
+                        }
+                    });
+
+
+                }
+
+            }
+
+        });
+        $(function () {
+            vm.init();
+            vm.hotsuggest();
+            vm.pageInit();
+        });
+    </script>
+
+}

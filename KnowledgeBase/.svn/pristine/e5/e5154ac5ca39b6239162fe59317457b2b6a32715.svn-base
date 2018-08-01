@@ -1,0 +1,120 @@
+﻿using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Application.Service;
+using BoeSj.KnowledgeBase.Infrastructure.Mongo;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using BoeSj.KnowledgeBase.Repository.Repository;
+using BoeSj.KnowledgeBase.Repository.UnitOfWork;
+using BoeSj.KnowledgeBase.Web.Filter;
+using Core.Cache;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using SSOManagerLib;
+using SSOManagerLib.Model;
+using System;
+using System.Reflection;
+
+namespace KnowledgeBase
+{
+    public class Startup
+    {
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        public IServiceProvider ConfigureServices(IServiceCollection services)
+        {
+            services.AddMvc(opt => opt.Filters.Add<KnowledgeExceptionFilter>()).AddJsonOptions(options => options.SerializerSettings.DateFormatString = "yyyy-MM-dd HH:mm:ss");
+            services.AddDbContext<KnowledgeContext>(options => options.UseMySQL(Configuration.GetConnectionString("MySqlConnection")));
+            services.AddScoped<DbContext>(provider => provider.GetService<KnowledgeContext>());
+            services.UserMongoLog(Configuration.GetSection("Mongodb"));
+            services.UserConfg<filePath>(Configuration.GetSection("filePath"));
+            //注册redis服务
+            services.Configure<CacheOption>(Configuration.GetSection("Redis"));
+            services.AddSingleton<ICache, RedisCache>();
+            services.AddSingleton<SSOHelper>();
+            //注册特性扫描服务
+            services.Configure<ModuleOption>(Configuration.GetSection("DllFilter"));
+            services.AddSingleton<AddAttibute>();
+            //注入排队的后台任务
+            services.AddHostedService<QueuedHostedService>();
+            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            //注入IHttpContextAccessor,实现httpconext.current
+            // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddAutoMapper();
+            //session
+            services.AddSession();
+            // services.AddAuthentication();
+            //core
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AnyOrigin", builder =>
+            //    {
+            //        builder
+            //            .AllowAnyOrigin()
+            //            .AllowAnyMethod();
+            //    });
+            //});
+
+            var containerBuilder = new ContainerBuilder();
+            var repositoryassembly = Assembly.Load("BoeSj.KnowledgeBase.Repository");
+            var applicationassembly = Assembly.Load("BoeSj.KnowledgeBase.Application");
+            var asses = new Assembly[] { repositoryassembly, applicationassembly };
+            containerBuilder.RegisterAssemblyTypes(asses)
+             .AsImplementedInterfaces().InstancePerLifetimeScope();
+            containerBuilder.RegisterGeneric(typeof(Repository<>))
+            .As(typeof(IRepository<>))
+            .SingleInstance();
+            containerBuilder.Populate(services);
+            var container = containerBuilder.Build();
+            return new AutofacServiceProvider(container);
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider svp)
+        {
+            //配置服务
+            //SSOManager.HttpContext.ServiceProvider = svp;
+
+            if (env.IsDevelopment())
+            {
+                app.UseBrowserLink();
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error");
+            }
+            //session
+            app.UseSession();
+
+            app.UseStaticFiles();
+            // Configure
+            //app.UseCors("AnyOrigin");
+            //  app.UseAuthentication();
+            //app.UseAuthorize(
+            //    Configuration["SSO:noauth_url"].ToString(), Configuration["SSO:login_url"].ToString()
+            // );
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "areas",
+                    template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                  );
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}"
+                    );
+            });
+        }
+    }
+}

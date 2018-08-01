@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Domain.Model.Response
+{
+    public class Response<T>
+    {
+        public T Data { get; set; }
+        /// <summary>
+        /// 1 success, 0 fail...
+        /// </summary>
+        public int Status { get; set; }
+
+        public string Msg { get; set; }
+    }
+}

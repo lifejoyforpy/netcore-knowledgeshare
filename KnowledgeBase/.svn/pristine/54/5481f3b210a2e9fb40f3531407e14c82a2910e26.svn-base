@@ -1,0 +1,12 @@
+﻿namespace BoeSj.KnowledgeBase.Application.DTO.Output
+{
+    public class QAInfoOutput
+    {
+        public string Guid { get; set; }
+        public string Title { get; set; } = "";
+        public string Content { get; set; } = "";
+        public int QuestionCategory { get; set; }
+        public string BelongDepartment { get; set; } = "";
+        public int State { get; set; }
+    }
+}

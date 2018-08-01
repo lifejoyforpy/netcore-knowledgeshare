@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using Microsoft.AspNetCore.Mvc;
+
+namespace BoeSj.KnowledgeBase.Web.Areas.KonwledgeBackend.Controllers
+{
+    [Area("KonwledgeBackend")]
+    public class QAPublishController : Controller
+    {
+        private readonly IQAPublishApp _IQAPublishApp;
+        public QAPublishController(IQAPublishApp IQAPublishApp)
+        {
+            _IQAPublishApp = IQAPublishApp;
+        }
+        public IActionResult QADetail()
+        {
+            return View();
+        }
+        [Produces("application/json")]
+        public async Task<Response<object>> SaveQuestion([FromBody] QAPublishInput input)
+        {
+            await _IQAPublishApp.QASave(input);
+            return new Response<object> {Status=1, Msg="插入成功" };
+        }
+    }
+}

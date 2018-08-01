@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>BoeSj.KnowledgeBase.Application</id>
+    <version>1.0.0</version>
+    <authors>BoeSj.KnowledgeBase.Application</authors>
+    <owners>BoeSj.KnowledgeBase.Application</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Package Description</description>
+    <dependencies>
+      <group targetFramework=".NETCoreApp2.0">
+        <dependency id="BoeSj.KnowledgeBase.Domain" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="BoeSj.KnowledgeBase.Repository" version="1.0.0" exclude="Build,Analyzers" />
+        <dependency id="BoeSj.KnowledgeBase.Infrastructure" version="1.0.0" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="E:\KnowledgeBase\Boe.Sj.Application\bin\Debug\netcoreapp2.0\BoeSj.KnowledgeBase.Application.dll" target="lib\netcoreapp2.0\BoeSj.KnowledgeBase.Application.dll" />
+  </files>
+</package>

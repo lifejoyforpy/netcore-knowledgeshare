@@ -1,0 +1,319 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "QADetail";
+}
+@section CSS
+    {
+    <link href="~/lib/summernote/summernote.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="~/css/wizard.css">
+    <link href="~/css/theme_styles.css" rel="stylesheet" />
+    <link href="~/lib/jqueryuploadfile/uploadfile.css" rel="stylesheet" />
+    <style>
+
+
+        .innerform {
+            margin-left: 15px
+        }
+
+        .buttongroup {
+            text-align: center;
+            padding-top: 10px
+        }
+    </style>
+}
+<div class="page-container_my" id="qa">
+    <div class="container_my">
+        <div class="row">
+            <div class="col-lg-12">
+
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12" style="padding:10px 60px">
+                <div class="main-box clearfix" style="min-height: 700px;">
+                    <header class="main-box-header clearfix">
+                        <article class="type-page hentry clearfix">
+                            <h1 class="post-title">你问我答</h1>
+                            <hr>
+                        </article>
+                    </header>
+                    <div class="main-box-body clearfix">
+                        <div id="myWizard" class="wizard">
+                            <div class="wizard-inner">
+                                <ul class="steps">
+                                    <li data-target="#step1" class="active"><span class="badge badge-primary">1</span>问题描述<span class="chevron"></span></li>
+                                    <li data-target="#step2"><span class="badge">2</span>问题提交<span class="chevron"></span></li>
+                                    <li data-target="#step3"><span class="badge">3</span>问题答复<span class="chevron"></span></li>
+                                    <li data-target="#step4"><span class="badge">4</span>问题采纳<span class="chevron"></span></li>
+                                </ul>
+                                <div class="actions">
+                                    <button type="button" class="btn btn-default btn-mini btn-prev"> <i class="icon-arrow-left"></i>Prev</button>
+                                    <button type="button" class="btn btn-success btn-mini btn-next" data-last="Finish">Next<i class="icon-arrow-right"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="step-content">
+                                    <div class="step-pane active" id="step1">
+                                        <br>
+                                        <div class="row">
+
+                                            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+                                                <form class="col-md-12 col-sm-12 col-lg-12">
+                                                    <div class="alert alert-info fade in">
+                                                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                                        <i class="fa fa-info-circle fa-fw fa-lg"></i>
+                                                        <strong>Hi!</strong> 请描述您需要帮助的问题
+                                                    </div>
+                                                    <div class="form-group form-inline">
+                                                        <input type="text" name="name" id="name" class="form-control required" value="" placeholder="请输入问题标题" style="width:100%" />
+                                                    </div>
+                                                    <div class="form-group form-inline">
+                                                        <div id="summernote"></div>
+                                                    </div>
+                                                    <div class="form-group form-inline">
+                                                        <label class="col-md-2 col-sm-2 col-lg-2">附件上传：</label>
+                                                        <div class="col-md-10 col-sm-10 col-lg-10">
+                                                            <div id="fileuploader"><label>请选择Excel文件</label></div>
+                                                            <div id="extrabutton" class="ajax-file-upload-green">上传</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group form-inline">
+                                                        <div class="col-md-12 col-sm-12 col-lg-12 buttongroup">
+                                                            <a v-on:click="PostQuestion()" class="btn btn-secondary">
+                                                                <i class="fa fa-plus-circle fa-lg"></i> 保存草稿
+                                                            </a>
+                                                            <a v-on:click="" class="btn btn-success">
+                                                                <i class="fa fa-plus-circle fa-lg"></i> 保存并发布
+                                                            </a>
+
+                                                        </div>
+
+                                                    </div>
+                                                </form>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-pane" id="step2">
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+                                                <div>
+                                                    <form class="col-md-12 col-sm-12 col-lg-12">
+                                                        <div class="alert alert-info fade in">
+                                                            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                                            <i class="fa fa-info-circle fa-fw fa-lg"></i>
+                                                            <strong>Hi!</strong> 请选择问题所属部门或分类，并发布
+                                                        </div>
+                                                        <div class="form-row">
+                                                            <div class="form-group col-md-6">
+                                                                <label for="qacategory">问题分类</label>
+                                                                <select class="form-control" id="qacategory">
+                                                                    <option>1</option>
+                                                                    <option>2</option>
+                                                                    <option>3</option>
+                                                                    <option>4</option>
+                                                                    <option>5</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group col-md-6">
+                                                                <label for="department">所属部门</label>
+                                                                <select class="form-control" id="department">
+                                                                    <option>1</option>
+                                                                    <option>2</option>
+                                                                    <option>3</option>
+                                                                    <option>4</option>
+                                                                    <option>5</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                            <div class="col-md-12 col-sm-12 col-lg-12 buttongroup">
+                                                                <a v-on:click="" class="btn btn-secondary">
+                                                                    <i class="fa fa-plus-circle fa-lg"></i> 后退
+                                                                </a>
+                                                                <a v-on:click="" class="btn btn-success">
+                                                                    <i class="fa fa-plus-circle fa-lg"></i> 发布问题
+                                                                </a>
+
+                                                            </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-pane" id="step3">
+                                        <br>
+                                        <h4>This is step 3</h4>
+                                        <div class="row">
+                                            <div class="col-lg-12">
+                                                <div class=" feed">
+                                                    <div class="main-box-body clearfix">
+                                                        <ul>
+                                                            <li class="clearfix">
+                                                                <div class="img">
+                                                                    <img src="~/images/george.png" />
+                                                                </div>
+                                                                <div class="title">
+                                                                    <a href="#">Robert Downey Jr.</a> took photo with Instagram.
+                                                                </div>
+                                                                <div class="post-time">
+                                                                    Today 5:22 pm
+                                                                </div>
+                                                                <div class="time-ago">
+                                                                    <i class="fa fa-clock-o"></i> 5 min.
+                                                                </div>
+                                                            </li>
+                                                            <li class="clearfix">
+                                                                <div class="img">
+                                                                    <img src="~/images/george.png" />
+                                                                </div>
+                                                                <div class="title">
+                                                                    <a href="#">Adriana Lima</a> checked in at Las Vegas Oscars
+                                                                </div>
+                                                                <div class="post-time">
+                                                                    Yesterday 11:38 am
+                                                                </div>
+                                                                <div class="photos clearfix">
+                                                                    <div class="item">
+                                                                        <a href="#">
+                                                                            <img src="~/images/error-404-v3.png" />
+                                                                        </a>
+                                                                    </div>
+                                                                    <div class="item">
+                                                                        <a href="#">
+                                                                            <img src="~/images/error-500-v1.png" />
+                                                                        </a>
+                                                                    </div>                                              
+                                                                </div>
+                                                                <div class="time-ago">
+                                                                    <i class="fa fa-clock-o"></i> 9 hours.
+                                                                </div>
+                                                            </li>
+                                                            <li class="clearfix">
+
+                                                                <div class="img">
+                                                                    <img src="~/images/george.png" />
+                                                                </div>
+                                                                <div class="title">
+                                                                    <a href="#">Emma Watson</a> commented on Jennifer Lawrence's video.
+                                                                </div>
+                                                                <div class="post-time">
+                                                                    Today 11:59 pm
+                                                                </div>
+                                                                <div class="time-ago">
+                                                                    <i class="fa fa-clock-o"></i> 28 min.
+                                                                </div>
+                                                                <div>
+                                                                    <p><span style="background-color: rgb(0, 255, 255);">回答问题</span></p><p><span style="background-color: rgb(0, 255, 255);">这个问题我不会，你特么会不会问啊！！！</span></p><p><span style="background-color: rgb(0, 255, 255);">讨厌！！！</span></p>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="step-pane" id="step4">
+                                        <br>
+                                        <h4>This is step 4</h4>
+                                        <div class="alert alert-success fade in" style="margin: 100px 0;">
+                                            <i class="fa fa-check-circle fa-fw fa-lg"></i>
+                                            <strong>Congratulation!</strong> You have successfully finished our nice wizard.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/lib/summernote/summernote.min.js"></script>
+    <script src="~/lib/summernote/summernote-zh-CN.js"></script>
+    <script src="~/lib/jqueryuploadfile/jquery.uploadfile.min.js" charset="gb2312"></script>
+    <script src="~/js/wizard.js"></script>
+    <script>
+        var vm = new Vue({
+            // 选项
+            el: '#qa',
+            data: {
+                QAInfo: {},
+                Reply: {}
+            },
+            methods: {
+                init: function () {
+                    //console.log(GET);
+                    //createPost();
+
+
+                    console.log($('#qa'));
+                    $(document).wizard({
+                        maxItem: {
+                            step: 4
+                        },
+                        currentItem: {
+                            step: 1
+                        }
+                    })
+                    var extraObj = $("#fileuploader").uploadFile({
+                        url: "@Url.Action("UploadFiles", "KnowLedgePublish", new { area= "KonwledgeBackend" })",
+                        statusBarWidth: 'auto',
+                        dragdropWidth: 'auto',
+                        showDelete: true,
+                        showDownload: true,
+                        autoSubmit: false,
+                        showProgress: true,
+                        extraHTML: function () {
+                            return "";
+                        },
+                        //deleteCallback: function (data, pd) {
+                        //    console.log('delete...')
+                        //},
+                        onSuccess: function (files, response, xhr, pd) {
+                            console.log(response)
+                            if (response.status == 1) {
+                                layer.alert("上传成功");
+                                extraObj.reset();
+                            } else {
+                                layer.alert("上传失败，重新上传");
+                            }
+                            console.log(response)
+                        },
+                        onError: function (files, status, message, pd) {
+                            console.error(message);
+                            }
+                        });
+                        $("#extrabutton").click(function () {
+                            extraObj.startUpload();
+                        });
+                },
+                PostQuestion: function () {
+                    API.POST(
+                        '@Url.Action("SaveQuestion", "QAPublish")',
+                        {
+                            Title:'',
+                            Content : $('#summernote').summernote('code')
+
+                        }
+                    ).then(data =>
+                        console.log(data));
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            $('#summernote').summernote({
+                //airMode: true,
+                lang: 'zh-CN',
+                height: 300,
+                minHeight: 200
+            });
+            vm.init();
+        });
+    </script>
+}
+

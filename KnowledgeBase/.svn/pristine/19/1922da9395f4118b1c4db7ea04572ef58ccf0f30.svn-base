@@ -1,0 +1,7 @@
+﻿import * as API1 from './request.js';
+//import config from '../config';
+const API = API1
+const HOST = 'https://localhost';
+function createPost(params) {
+   alert('sasa')
+}

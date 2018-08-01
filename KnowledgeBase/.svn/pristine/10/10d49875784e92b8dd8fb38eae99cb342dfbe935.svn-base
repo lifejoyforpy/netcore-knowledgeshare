@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using BoeSj.KnowledgeBase.Application.Interface;
+using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
+using MongoDB.Driver.GridFS;
+
+namespace BoeSj.KnowledgeBase.Web.Areas.KonwledgeBackend.Controllers
+{
+    public class BackendManageController : Controller 
+    {
+         private IKnowledegeApp _app;
+         private IMongoApp _mongo;
+        public BackendManageController(IKnowledegeApp app, IMongoApp mongo)
+        {
+            _app = app;
+            _mongo = mongo;
+        }
+
+        [Area("KonwledgeBackend")]
+        public IActionResult Details()
+        {
+            GridFSUploadOptions options = new GridFSUploadOptions
+            {  
+
+                
+
+                Metadata = new BsonDocument
+                {
+                   
+                    { "title", "知识分享" },
+                    {"tag","mes ,it" },
+                    {"category" ,"mes"},
+                    {"content","adfdsafddfadfdfafddfdfaadffdfddf" },
+                    { "copyrighted", true }
+                }
+            };
+            _mongo.UploadFileAsync(@"E:\KnowledgeBase\KnowledgeBase\wwwroot\file\test.pptx", "test.pptx", options);
+            return View();
+        }
+
+
+        public IActionResult GetPost( string id)
+        {   
+
+            return View();
+        }
+
+
+    }
+}

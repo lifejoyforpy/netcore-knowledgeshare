@@ -1,0 +1,12 @@
+﻿using BoeSj.KnowledgeBase.Domain.Model;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Application.Interface
+{
+    public interface ITestApp
+    {
+        bool Save(BiAuth_Role ent);
+    }
+}

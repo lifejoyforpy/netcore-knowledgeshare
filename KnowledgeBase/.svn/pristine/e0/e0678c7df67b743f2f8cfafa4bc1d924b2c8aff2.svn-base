@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Application.DTO.Output
+{
+    public class KnowledegeShareList
+    {
+        public string Title { get; set; }
+
+
+        public string Guid { get; set; }
+
+        public DateTime CreateTime { get; set; }
+    }
+}

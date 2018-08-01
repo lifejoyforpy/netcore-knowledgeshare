@@ -1,0 +1,409 @@
+﻿
+@{
+    ViewData["Title"] = "KnowledgeQADetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var id = ViewData["id"];
+}
+
+@section CSS{
+    <style>
+        .data-info {
+            padding: 16px 10px;
+            border-bottom: 1px solid #e3e3e3;
+            height: 77px;
+            display: flex !important;
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .title {
+            padding: 16px 16px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .userinfo {
+            /*border: 1px solid #e9e6c4;*/
+            /*padding: 10px 100px 10px 0px;*/
+            background: #fefbdc;
+            margin-bottom: 20px;
+        }
+
+        .itemtiling {
+            width: 100%;
+        }
+
+        .spancss {
+            font-weight: 700;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .infoheader {
+            height: 70px;
+            text-align: left;
+        }
+
+        .has_accept {
+            left: 20px;
+            height: 50px;
+            background: url('../../../../images/accept_icon.png') left center no-repeat;
+            overflow: hidden;
+            padding-left: 59px;
+            padding-top: 1px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #53ad7f;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .vote-accepted-on {
+            background-position: -40px -270px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            cursor: pointer;
+        }
+
+        .vote span {
+            display: block;
+            color: #6a737c;
+            text-align: center
+        }
+
+        .vote-count-post {
+            font-size: 20px;
+        }
+
+        .vote-up-off {
+            height: 30px;
+            text-indent: -9999em;
+            font-size: 1px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            width: 40px;
+            margin-bottom: 2px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+
+        .vote-down-off {
+            height: 30px;
+            text-indent: -9999em;
+            font-size: 1px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+            width: 40px;
+            margin-bottom: 2px;
+            background-image: url('../../../../images/sprites.svg'),none;
+            background-size: initial;
+            background-repeat: no-repeat;
+            overflow: hidden;
+        }
+
+        .innerform {
+            margin-left: 15px
+        }
+
+        .buttongroup {
+            text-align: center;
+            padding-top: 10px
+        }
+
+        .qatitle {
+            font-size: 20px;
+            line-height: 1.35;
+            font-weight: normal;
+            margin-bottom: .5em
+        }
+        .feed li .time-ago {
+            position: absolute;
+            top: 16px;
+            right: 0;
+            color: #878787;
+            font-size: 0.875em;
+        }
+    </style>
+
+
+
+
+}}
+<div id="detail">
+    <div class="page-container">
+        <div class="container">
+            <div class="row">
+                <!-- start of page content -->
+
+                <div class="col-lg-8 col-md-8 col-sm-8" style="padding:10px 60px">
+                    <div class="main-box clearfix" style="min-height: 700px;">
+                        <div class="main-box-body clearfix">
+                            <div id="qadetail" class="row" style="padding:10px">
+
+                                <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+
+                                    <div class="qatitle" style="text-align:center">
+                                        <h2>{{QAInfo.title}}</h2>
+                                    </div>
+                                    <div v-html="QAInfo.content">
+                                    </div>
+                                </div>
+                                <div class="email-attachments-content">
+                                    <ul class="clearfix">
+                                        <li v-for="file in QAInfo.files">
+                                            <div class="img">
+                                                <i class="fa fa-file"></i>
+                                            </div>
+                                            <span class="name">
+                                                {{file.fileName}}
+                                            </span>
+                                            <a :href="getUrl(file.fileId)">View</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <h1 style="font-size:1.8em;color:#717070">{{Replys.length}}个回答</h1>
+                            <hr style="height: 1px;border-top: 1px dashed rgb(92, 96, 101);border-right: none;border-bottom: none;border-left: none;border-image: initial;" />
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class=" feed">
+                                        <div class="main-box-body clearfix" style="padding: 0px;">
+                                            <ul>
+                                                <li v-for="item in Replys">
+                                                    <div v-if="(item.isBest===1)?'ok':''" class="has_accept">
+                                                        已采纳
+                                                    </div>
+                                                    <div>
+                                                        <div class="img" style="float:left">
+                                                            <img src="~/images/george.png" />
+                                                        </div>
+                                                        <div class="title1" style="line-height:30px">
+                                                            <a href="#">{{item.author}}</a> {{item.jobNum}}
+                                                        </div>
+                                                        <div class="post-time">
+                                                            {{item.createTime}}
+                                                        </div>
+                                                        <div class="time-ago">
+                                                            <i class="fa fa-clock-o"></i> {{item.createTime.getDateDiff()}}
+                                                        </div>
+                                                        <div style="display:grid;grid-template-columns:max-content 1fr">
+                                                            <div class="votecell post-layout--left" style="width:46px;grid-column:1">
+                                                                <div class="vote">
+                                                                    <input type="hidden" name="_id_" value="50820935">
+                                                                    <a v-on:click="Ding(item)" class="vote-up-off" style="background-position: 0 -170px;" title="顶">up vote</a>
+                                                                    <span itemprop="upvoteCount" class="vote-count-post ">{{item.likes}}</span>
+                                                                    <a v-on:click="Cai(item)" class="vote-down-off" style="background-position: 0 -220px;" title="踩">down vote</a>
+                                                                    <span v-on:click="SetBest(item)" class="vote-accepted-on load-accepted-answer-date" style="width:40px;height:40px;display: none;" title="点击采纳此回答"></span>
+                                                                </div>
+                                                            </div>
+                                                            <div style="grid-column:2;margin-left:15px">
+                                                                <div v-html="item.content">
+                                                                </div>
+                                                                <div class="email-attachments-content">
+                                                                    <ul class="clearfix">
+                                                                        <li v-for="file in item.attachment">
+                                                                            <div class="img">
+                                                                                <i class="fa fa-file"></i>
+                                                                            </div>
+                                                                            <span class="name">
+                                                                                {{file.name}}
+                                                                            </span>
+                                                                            <a :href="getUrl(file.id)">View</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+
+
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- end of page content -->
+                <!-- start of sidebar -->
+                <aside class="col-md-4 page-sidebar">
+
+                    <section class="widget">
+
+                        <div class="support-widget">
+                            <div class="infoheader">
+                                <h3 class="title">个人资料</h3>
+                                <span class="spancss">作者:</span>
+                                <span class="spancss"> admin </span>
+                            </div>
+                        </div>
+                        <div class="userinfo">
+                            <div class="data-info itemtiling">
+                                <dl class="text-center itemtiling" title="274">
+                                    <dt><span>厂别</span></dt>
+                                    <dd><span class="count">S01</span></dd>
+                                </dl>
+                                <dl class="text-center itemtiling" title="274">
+                                    <dt><span>部门</span></dt>
+                                    <dd><span class="count">IT</span></dd>
+                                </dl>
+                                <dl class="text-center itemtiling" title="274">
+                                    <dt><span>工号</span></dt>
+                                    <dd><span class="count">admin</span></dd>
+                                </dl>
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="widget">
+                        <h3 class="title">Featured Articles</h3>
+                        <ul class="articles">
+                            <li class="article-entry standard">
+                                <h4><a href="single.html">Integrating WordPress with Your Website</a></h4>
+                                <span class="article-meta">25 Feb, 2013 in <a href="#" title="View all posts in Server &amp; Database">Server &amp; Database</a></span>
+                                <span class="like-count">66</span>
+                            </li>
+                            <li class="article-entry standard">
+                                <h4><a href="single.html">WordPress Site Maintenance</a></h4>
+                                <span class="article-meta">24 Feb, 2013 in <a href="#" title="View all posts in Website Dev">Website Dev</a></span>
+                                <span class="like-count">15</span>
+                            </li>
+                            <li class="article-entry video">
+                                <h4><a href="single.html">Meta Tags in WordPress</a></h4>
+                                <span class="article-meta">23 Feb, 2013 in <a href="#" title="View all posts in Website Dev">Website Dev</a></span>
+                                <span class="like-count">8</span>
+                            </li>
+                            <li class="article-entry image">
+                                <h4><a href="single.html">WordPress in Your Language</a></h4>
+                                <span class="article-meta">22 Feb, 2013 in <a href="#" title="View all posts in Advanced Techniques">Advanced Techniques</a></span>
+                                <span class="like-count">6</span>
+                            </li>
+                        </ul>
+                    </section>
+
+
+
+                    <section class="widget">
+                        <h3 class="title">Categories</h3>
+                        <ul>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Advanced Techniques</a> </li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Designing in WordPress</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Server &amp; Database</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet, ">Theme Development</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">Website Dev</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet,">WordPress for Beginners</a></li>
+                            <li><a href="#" title="Lorem ipsum dolor sit amet, ">WordPress Plugins</a></li>
+                        </ul>
+                    </section>
+
+                    <section class="widget">
+                        <h3 class="title">Recent Comments</h3>
+                        <ul id="recentcomments">
+                            <li class="recentcomments"><a href="#" rel="external nofollow" class="url">John Doe</a> on <a href="#">Integrating WordPress with Your Website</a></li>
+                            <li class="recentcomments">saqib sarwar on <a href="#">Integrating WordPress with Your Website</a></li>
+                            <li class="recentcomments"><a href="#" rel="external nofollow" class="url">John Doe</a> on <a href="#">Integrating WordPress with Your Website</a></li>
+                            <li class="recentcomments"><a href="#" rel="external nofollow" class="url">Mr WordPress</a> on <a href="#">Installing WordPress</a></li>
+                        </ul>
+                    </section>
+
+                </aside>
+                <!-- end of sidebar -->
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <div>
+        <script>
+            var postGuid = '@id';
+            var tempGuid = '';
+        var vm = new Vue({
+            // 选项
+            el: '#detail',
+            data: {
+                QAInfo: {},
+                Replys: {},
+                postGuid: postGuid
+            },
+            methods: {
+                init: function () {
+                    if (postGuid != '') {
+                        this.GetQAInfo(postGuid);
+                        this.GetReplys(postGuid);
+                    }
+                },
+                GetReplys: function (postGuid) {
+                    API.POST(
+                        '@Url.Action("GetReplys", "QAPublish",new {area= "KonwledgeBackend" })',
+                        {
+                            postGuid: postGuid,
+
+                        }).then(ret =>
+                        {
+                            this.Replys = ret;
+                        }).catch(ret => console.log('获取回复错误'));
+                },
+                GetQAInfo: function (postGuid) {
+                     API.POST(
+                        '@Url.Action("GetQAInfo", "QAPublish", new { area = "KonwledgeBackend" })',
+                        {
+                            postGuid: postGuid,
+                        }).then(ret =>
+                        {
+                            tempGuid = ret.guid;
+                            this.QAInfo = ret;
+                         })
+                         .catch(ret => layer.alert('抱歉,加载失败'));
+
+                },
+                Ding: function (reply) {
+                     API.POST(
+                        '@Url.Action("Like", "QAPublish", new { area = "KonwledgeBackend" })',
+                        {
+                            replyid: reply.id,
+                            type:1
+                        }).then(ret =>
+                        {
+                            reply.likes++;
+                        })
+                         .catch(ret => layer.alert('抱歉,操作失败'));
+                },
+                Cai: function (reply) {
+                        API.POST(
+                        '@Url.Action("Like", "QAPublish", new { area = "KonwledgeBackend" })',
+                        {
+                            replyid: reply.id,
+                            type:2
+                        }).then(ret =>
+                        {
+                            reply.likes--;
+                        })
+                         .catch(ret => layer.alert('抱歉,操作失败'));
+
+                },
+                getUrl: function (guid) {
+
+                    return '/KonwledgeBackend/KnowLedgePublish/GetKnownHtml?id=' + guid;
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            vm.init();
+        });
+        </script>
+    </div>
+}

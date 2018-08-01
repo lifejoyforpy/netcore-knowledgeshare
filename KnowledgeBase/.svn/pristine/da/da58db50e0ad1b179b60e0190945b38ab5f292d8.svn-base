@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Domain.Model
+{
+
+    [Table("fileshare")]
+    public class FileShare
+    {  
+        [Key]
+        public int Id { get; set; }
+
+        public string Guid { get; set; }
+
+        public string Title { get; set; }
+        public string JobNum { get; set; }
+
+        public string Author { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+        public int Status { get; set; } = 0;      
+
+        public int Views { get; set; } = 0;
+
+        public int Likes { get; set; } = 0;
+
+    }
+}

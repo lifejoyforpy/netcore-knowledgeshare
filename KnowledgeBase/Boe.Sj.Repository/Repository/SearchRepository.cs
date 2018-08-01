@@ -1,0 +1,156 @@
+﻿using BoeSj.KnowledgeBase.Infrastructure.Search;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using Elasticsearch.Net;
+using Nest;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Repository.Repository
+{
+    public class SearchRepository: ISearchRepository
+    {
+
+        private readonly IElasticClient _client;
+        public SearchRepository(ElasticSearchContext client)
+        {       
+            _client = client._client;
+        }
+
+
+        //public Func<SourceFilterDescriptor<TEntity>, ISourceFilter> IncludeFields(Expression<Func<TEntity, object>> fieldsExp)
+        //{
+        //    var builder = Builders<TEntity>.Projection;
+
+        //    var body = (fieldsExp.Body as NewExpression);
+        //    if (body == null || body.Members == null)
+        //    {
+        //        throw new Exception("fieldsExp is invalid expression format， eg: x => new { x.Field1, x.Field2 }");
+        //    }
+        //    foreach (var m in body.Members)
+        //    {
+        //        builder = builder.Include(m.Name);
+        //    }
+
+        //    return x => builder.Project;
+        //}
+        ///// <summary>
+        ///// GetList
+        ///// </summary>
+        ///// <param name="filterExp"></param>
+        ///// <param name="includeFieldExp"></param>
+        ///// <param name="sortExp"></param>
+        ///// <param name="sortType"></param>
+        ///// <param name="limit"></param>
+        ///// <param name="skip"></param>
+        ///// <returns></returns>
+        //public async Task<Tuple<long, List<TEntity>>> GetListAsync(Expression<Func<TEntity, bool>> filterExp = null,
+        //    Expression<Func<TEntity, object>> includeFieldExp = null,
+        //    Expression<Func<TEntity, object>> sortExp = null, SortOrder sortType = SortOrder.Ascending
+        //   , int limit = 10, int skip = 0)
+        //{
+        //    Func<QueryContainerDescriptor<TEntity>, QueryContainer> filter = null;
+        //    if (filterExp != null)
+        //    {
+        //        filter = q => Builders<TEntity>.Filter.Where(filterExp).Query;
+        //    }
+        //    else
+        //    {
+        //        filter = q => q.MatchAll();
+
+        //    }
+
+        //    Func<SourceFilterDescriptor<TEntity>, ISourceFilter> project = null;
+        //    if (includeFieldExp != null)
+        //    {
+        //        project = IncludeFields(includeFieldExp);
+        //    }
+        //    else
+        //    {
+        //        project = i => i.IncludeAll();
+        //    }
+
+        //    Func<SearchDescriptor<TEntity>, ISearchRequest> selector = null;
+        //    if (sortExp != null)
+        //    {
+        //        selector = new Func<SearchDescriptor<TEntity>, ISearchRequest>(s => s
+        //            .Query(filter)
+        //            .Sort(st => st.Field(sortExp, sortType))
+        //            .Source(project)
+        //            .From(skip)
+        //            .Size(limit));
+        //    }
+        //    else
+        //    {
+        //        selector = new Func<SearchDescriptor<TEntity>, ISearchRequest>(s => s
+        //            .Query(filter)
+        //            .Source(project)
+        //            .From(skip)
+        //            .Size(limit));
+        //    }
+
+        //    var result = await _client.SearchAsync(selector);
+        //    return new Tuple<long, List<TEntity>>(result.Total, result.Documents.ToList());
+        //}
+
+        ///// <summary>
+        ///// GetList
+        ///// </summary>
+        ///// <param name="filterExp"></param>
+        ///// <param name="includeFieldExp"></param>
+        ///// <param name="sortExp"></param>
+        ///// <param name="sortType"></param>
+        ///// <param name="limit"></param>
+        ///// <param name="skip"></param>
+        ///// <returns></returns>
+        //public async Task<Tuple<long, List<TEntity>>> GetListAsync(Func<QueryContainerDescriptor<TEntity>, QueryContainer> filterFunc = null,
+        //    Func<SourceFilterDescriptor<TEntity>, ISourceFilter> includeFieldFunc = null,
+        //    Expression<Func<TEntity, object>> sortExp = null, SortOrder sortType = SortOrder.Ascending
+        //   , int limit = 10, int skip = 0)
+        //{
+        //    Func<SearchDescriptor<TEntity>, ISearchRequest> selector = null;
+
+        //    if (sortExp != null)
+        //    {
+        //        selector = new Func<SearchDescriptor<TEntity>, ISearchRequest>(s => s
+        //            .Query(filterFunc ?? (q => q.MatchAll()))
+        //            .Sort(st => st.Field(sortExp, sortType))
+        //            .Source(includeFieldFunc ?? (i => i.IncludeAll()))
+        //            .From(skip)
+        //            .Size(limit));
+        //    }
+        //    else
+        //    {
+        //        selector = new Func<SearchDescriptor<TEntity>, ISearchRequest>(s => s
+        //            .Query(filterFunc ?? (q => q.MatchAll()))
+        //            .Source(includeFieldFunc ?? (i => i.IncludeAll()))
+        //            .From(skip)
+        //            .Size(limit));
+        //    }
+
+        //    var result = await _client.SearchAsync(selector);
+        //    return new Tuple<long, List<TEntity>>(result.Total, result.Documents.ToList());
+        //}
+
+
+        //a search query  
+        //At this point, we are doing match_all query 
+        public async Task<Tuple<long, List<T>>> Search<T>(Func<SearchDescriptor<T>, ISearchRequest> searchRequest)  where T:class
+        {
+      
+           var result= await _client.SearchAsync<T>(searchRequest);
+
+           return new Tuple<long, List<T>>(result.Total, result.Documents.ToList());
+        }
+        public async Task<ISearchResponse<T>> SearchSuggest<T>(Func<SearchDescriptor<T>, ISearchRequest> searchRequest) where T : class
+        {
+
+            var  result = await _client.SearchAsync<T>(searchRequest);
+            return result;
+        }
+
+    }
+}

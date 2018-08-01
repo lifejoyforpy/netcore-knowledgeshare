@@ -1,0 +1,9 @@
+E:\KnowledgeBase\Boe.Sj.Domain\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.deps.json
+E:\KnowledgeBase\Boe.Sj.Domain\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.dll
+E:\KnowledgeBase\Boe.Sj.Domain\bin\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.pdb
+E:\KnowledgeBase\Boe.Sj.Domain\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.csprojResolveAssemblyReference.cache
+E:\KnowledgeBase\Boe.Sj.Domain\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.csproj.CoreCompileInputs.cache
+E:\KnowledgeBase\Boe.Sj.Domain\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.AssemblyInfoInputs.cache
+E:\KnowledgeBase\Boe.Sj.Domain\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.AssemblyInfo.cs
+E:\KnowledgeBase\Boe.Sj.Domain\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.dll
+E:\KnowledgeBase\Boe.Sj.Domain\obj\Release\netcoreapp2.0\BoeSj.KnowledgeBase.Domain.pdb

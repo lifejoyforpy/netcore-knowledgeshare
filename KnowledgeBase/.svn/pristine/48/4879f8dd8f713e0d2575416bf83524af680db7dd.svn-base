@@ -1,0 +1,18 @@
+﻿using BoeSj.KnowledgeBase.Domain.Model;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Repository.UnitOfWork
+{
+    public class KnowledgeContext:DbContext
+    {
+        public KnowledgeContext(DbContextOptions<KnowledgeContext> options)
+       : base(options)
+        { }
+
+        public virtual DbSet<BiAuth_Role> BiAuth_Role { get; set; }
+    }
+}

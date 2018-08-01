@@ -1,0 +1,262 @@
+﻿@{
+    ViewData["Title"] = "Publish";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var original = ViewBag.Id;
+    var guid = ViewBag.Id==""? Guid.NewGuid().ToString(): ViewBag.Id;
+}
+
+@section CSS
+    {
+    <link href="~/lib/summernote/summernote.css" rel="stylesheet" />
+    <link href="~/lib/jqueryuploadfile/uploadfile.css" rel="stylesheet" />
+    <style>
+        .boxsha {
+            border: 1px solid #e9e9e9;
+            box-shadow: -1px -1px 4px #e9e9e9;
+            background: #fff
+        }
+
+        .innerform {
+            margin-left: 15px
+        }
+
+        .buttongroup {
+            text-align: center;
+            padding-top: 10px
+        }
+
+        .bootstrap-tagsinput {
+            margin-left: 15px;
+            min-width: 200px;
+        }
+
+            .bootstrap-tagsinput input {
+                min-width: inherit
+            }
+    </style>
+}
+<div class="page-container" style="background:#f4f4f4" id="kbpublish">
+    <div class="container" style="background:#f4f4f4">
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+                <form class="col-md-12 col-sm-12 col-lg-12">
+                    <article class="type-page hentry clearfix">
+                        <h2 class="post-title">分享发布</h2>
+                        <hr>
+                    </article>
+                    <div class="form-group form-inline">
+                        <input type="text" name="name" id="name" class="form-control"
+                               v-model="dataresult.title" placeholder="请输入分享标题" style="width:100%" />
+                    </div>
+                    <div class="form-group form-inline">
+                        <div id="summernote"></div>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2 col-sm-2 col-lg-2">附件上传：</label>
+                        <div class="col-md-10 col-sm-10 col-lg-10">
+                            <div id="fileuploader"><label>请选择Excel文件</label></div>
+                            @*<div id="extrabutton" class="ajax-file-upload-green">上传</div>*@
+                        </div>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2 col-sm-2 col-lg-2">标签：</label>
+                        <input class="" type="text" id="Tag" name="Tag" v-model="dataresult.tag" data-role="tagsinput" placeholder="请设置标签,回车或光标移出确定">
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2 col-sm-2 col-lg-2">分类：</label>
+                        <select v-model="dataresult.category" id="Category" name="Category" style="width:212px" class="col-md-10 form-control innerform">
+                            <option value="" selected="selected">-请选择-</option>
+                            <option value="1">A</option>
+                            <option value="2">B</option>
+                            <option value="3">C</option>
+                            <option value="4">D</option>
+                            <option value="5">E</option>
+                        </select>
+                    </div>
+                    <div class="form-group form-inline">
+                        <div class="col-md-12 col-sm-12 col-lg-12 buttongroup">
+                            <a v-on:click="publish(1)" class="btn btn-primary">
+                                <i class="fa fa-plus-circle fa-lg"></i> 发布分享
+                            </a>
+                            <a v-on:click="publish(0)" class="btn btn-default">
+                                <i class="fa fa-pencil-square-o fa-lg"></i> 存为草稿
+                            </a>
+                            <a v-on:click="" class="btn btn-default">
+                                <i class="fa fa-reply fa-lg"></i> 返回
+                            </a>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/lib/summernote/summernote.min.js"></script>
+    <script src="~/lib/summernote/summernote-zh-CN.js"></script>
+    <script src="~/lib/jqueryuploadfile/jquery.uploadfile.min.js" charset="gb2312"></script>
+    <script>
+        var vm = new Vue({
+            // 选项
+            el: '#kbpublish',
+            data: {
+                original:'@original',
+                dataresult: {
+                    id:"",
+                    title: "",
+                    tag: [],
+                    category: "",
+                    author: "admin",
+                    //Type: 0,
+                    content: "",
+                    guid: '@guid',
+                    jobNum: '1011',
+                    status: 0,
+                }
+            },
+            methods: {
+                init: function () {
+                    var extraObj = $("#fileuploader").uploadFile({
+                        url: "@Url.Action("UploadFiles", "KnowLedgePublish", new { area= "KonwledgeBackend", guid=guid })",
+                        statusBarWidth: 'auto',
+                        dragdropWidth: 'auto',
+                        //multiple: true,
+                        maxFileSize: 1048576 * 10,
+                        sizeErrorStr: "文件大小不得大于:",
+                        abortStr: "取消",
+                        acceptFiles: "image/*,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,"
+                            +"application/vnd.ms-excel,video/*,.pdf,.doc,.docx",
+                        showDelete: true,
+                        showDownload: true,
+                        autoSubmit: true,
+                        showProgress: true,
+                        //showPreview: true,
+                        //previewHeight: "100px",
+                        //previewWidth: "100px",
+
+                        deleteCallback: function (data, pd) {
+                            var fid = "";
+                            if (data.length) {
+                                fid = data[0];
+                            } else {
+                                fid = data.data;
+                            }
+                            $.ajax({
+                                url: '@Url.Action("DeleteFile", "KnowLedgePublish")?fileId=' + fid,
+                                    //dataType: "json",
+                                    success: function () {
+                                        layer.msg("删除附件成功")
+                                },
+                                error: function () {
+                                    layer.msg("yichang")
+                                }
+                            });
+
+                        },
+                        downloadCallback: function (files, pd) {
+                            if (files.length) {
+                                window.open('@Url.Action("DownloadFile", "KnowLedgePublish")?fileId=' + files[0]);
+                            } else {
+                                window.open('@Url.Action("DownloadFile", "KnowLedgePublish")?fileId=' + files.data);
+                            }
+                            //
+                        },
+                        onSuccess: function (files, response, xhr, pd) {
+                            if (response.status == 1) {
+                                layer.msg(files[0]+": 上传成功");
+                            } else {
+                                layer.msg(files[0] +": 上传失败，重新上传");
+                            }
+                        },
+                        onError: function (files, status, message, pd) {
+                            console.error(message);
+                        } ,
+                        onLoad: function (obj) {
+
+                            if (vm.$data.original && vm.$data.original != '') {
+                                $.ajax({
+                                    cache: false,
+                                    url: '@Url.Action("FileInfoLoad", "KnowLedgePublish")?postId=' + vm.$data.original,
+                                    dataType: "json",
+                                    success: function (data) {
+                                        //console.log(data)
+                                        for (var i = 0; i < data.data.length; i++) {
+                                            obj.createProgress(data.data[i]["fileId"], data.data[i]["fileName"], data.data[i]["fileSize"]);
+                                    }
+                                }
+                            });
+                            }
+
+                        },
+                        });
+                        //$("#extrabutton").click(function () {
+                        //    extraObj.startUpload();
+                        //});
+                    if (vm.$data.original && vm.$data.original!='') {
+                        vm.GetInfos();
+                    }
+
+                },
+                GetInfos: function () {
+                    //console.log(vm.$data.original)
+                    API.POST('@Url.Action("GetKnowledgeShareDetail", "BackendManage", new { area= "KonwledgeBackend" })?Id=' + vm.$data.original
+                    ).then(r => {
+                        //console.log(r)
+                        vm.dataresult = r;
+                        $('#summernote').summernote('code', r.content);
+                        $("#Tag").tagsinput('add', r.tag);
+                        //附件
+                        }).catch(r => layer.msg("获取数据失败！！！"));
+                },
+                publish: function (status) {
+
+                    if (!vm.dataresult.title) {
+                        layer.msg("请输入文章标题！")
+                        return;
+                    }
+                    if (!vm.dataresult.category) {
+                        layer.msg("请选择分类！")
+                        return;
+                    }
+
+                    vm.dataresult.content = $('#summernote').summernote('code');
+                    vm.dataresult.status = status;
+                    vm.dataresult.tag = $("#Tag").val().split(',')
+                    //console.log(vm.dataresult)
+                    //return;
+
+                    API.POST('@Url.Action("MyKnowledgePublish", "KnowLedgePublish", new { area= "KonwledgeBackend" })?original=' + vm.$data.original, vm.dataresult
+                    ).then(r => {
+                        //console.log(status)
+                        if (status == 1) {
+                            location.href = '@Url.Action("List", "BackendManage", new { area= "KonwledgeBackend" })';
+
+                        } else {
+                            //console.log(r)
+                            vm.$data.dataresult.id = r;
+                            vm.$data.original = vm.$data.dataresult.guid;//
+                            //console.log(vm.$data.dataresult);
+                            layer.msg("保存草稿成功")
+                        }
+                        }).catch(r => { 
+                            vm.$data.original = vm.$data.dataresult.guid;//
+                            layer.msg("提交失败！！！")
+                        }
+                            );
+                },
+            }
+        });
+
+        $(document).ready(function () {
+            $('#summernote').summernote({
+                //airMode: true,
+                lang: 'zh-CN',
+                height: 300,
+                minHeight: 200
+            });
+            vm.init();
+        });
+    </script>
+}

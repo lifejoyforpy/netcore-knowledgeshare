@@ -1,0 +1,46 @@
+﻿{
+  "ConnectionStrings": {
+    "MySqlConnection": "Server=10.22.10.101;Port=3306;Database=knowledgebase;Uid=boe;Pwd=boe888888;SslMode=none",
+    "MongoConnection": "mongodb://10.22.10.101"
+  },
+  "Mongodb": {
+    "DataBase": "KnowledgeBase",
+    "UserName": "admin",
+    "Password": "admin",
+    "Services": [
+      {
+        "Host": "10.22.10.101",
+        "Port": "27017"
+      }
+    ]
+  },
+  "Logging": {
+    "IncludeScopes": false,
+    "LogLevel": {
+      "Default": "Warning"
+    }
+  },
+  "filePath": {
+    "GridFsDownloadPath": "/www.root/file/download"
+  },
+  "Redis": {
+    "UserRedis": "True",
+    "Connection": "10.22.10.101:6379,Password=boe888888",
+    "InstanceName": "",
+    "DataBase": 0
+  },
+  "SSO": {
+    "login_url": "http://10.22.10.102:9002/",
+    "noauth_url": "/Forbidden"
+  },
+  "DllFilter": {
+    "DllName": "D:\\BOE\\KnowledgeBase\\KnowledgeBase\\bin\\Debug\\netcoreapp2.0\\BoeSj.KnowledgeBase.Web.dll",
+    "ClassList": [
+      {
+        "ClassName": "KnowledgeBase.Controllers.HomeController"
+      }
+    ],
+    "Home": "Home",
+    "Index": "Index"
+  }
+}

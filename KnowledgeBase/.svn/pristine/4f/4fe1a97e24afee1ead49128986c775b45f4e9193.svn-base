@@ -1,0 +1,700 @@
+﻿using BoeSj.KnowledgeBase.Repository.Interface;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.GridFS;
+using MongoDB.Driver.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Infrastructure.Mongo
+{
+    public class MongoRepostory : IMongoRepository
+    {
+        #region Query
+
+        private readonly IMongoDatabase database;
+        private readonly filePath _confg;
+
+        public MongoRepostory(MongoContext context, ConfgContext<filePath> confg)
+        {
+            this.database = context.database;
+            _confg = confg.Get();
+        }
+
+        /// <summary>
+        /// 全部结果
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<TEntity> Query<TEntity>()
+        {
+            return this.database.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public Task<IEnumerable<TEntity>> QueryAsync<TEntity>(CancellationToken cancellationToken = new CancellationToken())
+        {
+            return Task.Run(() => Query<TEntity>(), cancellationToken);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> Query<TEntity>(Expression<Func<TEntity, bool>> predicate)
+        {
+            return this.database.GetCollection<TEntity>(typeof(TEntity).Name).FindSync(predicate).ToEnumerable();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<TEntity>> QueryAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            var reulst = await this.database.GetCollection<TEntity>(typeof(TEntity).Name).FindAsync(predicate, cancellationToken: cancellationToken);
+            return reulst.ToEnumerable();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public Task<IMongoQueryable<TEntity>> QueryAsync<TEntity>()
+        {
+            return Task.Run(() =>
+            {
+                return this.database.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable();
+            });
+        }
+
+        /// </summary>
+        /// <summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <returns></returns>
+        public IEnumerable<TEntity> Query<TEntity>(ISpecification<TEntity> specification)
+        {
+            return Query(specification.Predicate);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<IEnumerable<TEntity>> QueryAsync<TEntity>(ISpecification<TEntity> specification,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await QueryAsync(specification.Predicate, cancellationToken);
+        }
+
+        #endregion Query
+
+        #region Insert
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns></returns>
+        public TEntity Insert<TEntity>(TEntity entity)
+        {
+            this.database.GetCollection<TEntity>(typeof(TEntity).Name).InsertOne(entity);
+            return entity;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<TEntity> InsertAsync<TEntity>(TEntity entity,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            await this.database.GetCollection<TEntity>(typeof(TEntity).Name).InsertOneAsync(entity, cancellationToken: cancellationToken);
+            return entity;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<TEntity> InsertOrUpdateAsync<TEntity>(TEntity entity,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : BaseModel
+        {
+            
+            if (this.database.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable().Where(o => o.Id == entity.Id).Count()>0)
+            {
+                await UpdateAsync(entity);
+            }
+            else
+            {
+                await this.database.GetCollection<TEntity>(typeof(TEntity).Name).InsertOneAsync(entity, cancellationToken: cancellationToken);
+            }
+            return entity;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entities">实体</param>
+        /// <returns></returns>
+        public int Insert<TEntity>(IEnumerable<TEntity> entities)
+        {
+            this.database.GetCollection<TEntity>(typeof(TEntity).Name).InsertMany(entities);
+            return entities.Count();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entities">实体</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<int> InsertAsync<TEntity>(IEnumerable<TEntity> entities,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            await this.database.GetCollection<TEntity>(typeof(TEntity).Name).InsertManyAsync(entities, cancellationToken: cancellationToken);
+            return entities.Count();
+        }
+
+        #endregion Insert
+
+        #region Update
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <returns></returns>
+        public long Update<TEntity>(TEntity entity) where TEntity : class, IMongoEntity<string>
+        {
+            var doc = entity.ToBsonDocument();
+            var result = this.database.GetCollection<TEntity>(typeof(TEntity).Name).UpdateOne(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id),
+                new BsonDocumentUpdateDefinition<TEntity>(doc));
+            return result.ModifiedCount;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<long> UpdateAsync<TEntity>(TEntity entity,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            var doc = entity.ToBsonDocument();
+            var newDocument =
+            new BsonDocument { { "$set", doc } };
+            var result = await this.database.GetCollection<TEntity>(typeof(TEntity).Name).UpdateOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, entity.Id),
+                new BsonDocumentUpdateDefinition<TEntity>(newDocument), cancellationToken: cancellationToken);
+            return result.ModifiedCount;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entity">实体</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<long> UpdateAsync<TEntity>(string Id, object entity,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            var doc = entity.ToBsonDocument();
+            var newDocument =
+            new BsonDocument { { "$set", doc } };
+            var result = await this.database.GetCollection<TEntity>(typeof(TEntity).Name).UpdateOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, Id),
+                new BsonDocumentUpdateDefinition<TEntity>(newDocument), cancellationToken: cancellationToken);
+            return result.ModifiedCount;
+        }
+
+        public async Task<long> UpdateIncAsync<TEntity>(string Id, object IncInfo,
+    CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            var doc = IncInfo.ToBsonDocument();
+            var newDocument =
+            new BsonDocument { { "$inc", doc } };
+            var result = await this.database.GetCollection<TEntity>(typeof(TEntity).Name).UpdateOneAsync(Builders<TEntity>.Filter.Eq(e => e.Id, Id),
+                new BsonDocumentUpdateDefinition<TEntity>(newDocument), cancellationToken: cancellationToken);
+            return result.ModifiedCount;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entitys">实体集合</param>
+        /// <returns></returns>
+        public long Update<TEntity>(IEnumerable<TEntity> entitys) where TEntity : class, IMongoEntity<string>
+        {
+            long reulst = 0;
+            foreach (var item in entitys)
+                reulst += Update(item);
+            return reulst;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="entitys">实体集合</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<long> UpdateAsync<TEntity>(IEnumerable<TEntity> entitys,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            long reulst = 0;
+            foreach (var item in entitys)
+                reulst += await UpdateAsync(item, cancellationToken);
+            return reulst;
+        }
+
+        #endregion Update
+
+        #region Delete
+
+        /// <summary>
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns></returns>
+        public long Delete<TEntity>(string id) where TEntity : class, IMongoEntity<string>
+        {
+            return this.database.GetCollection<TEntity>(typeof(TEntity).Name).DeleteOne(a => a.Id == id).DeletedCount;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<long> DeleteAsync<TEntity>(string id,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            var result = await this.database.GetCollection<TEntity>(typeof(TEntity).Name).DeleteOneAsync(a => a.Id == id, cancellationToken);
+
+            return result.DeletedCount;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <returns></returns>
+        public long Delete<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class, IMongoEntity<string>
+        {
+            return this.database.GetCollection<TEntity>(typeof(TEntity).Name).DeleteOne(predicate).DeletedCount;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<long> DeleteAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            var result = await this.database.GetCollection<TEntity>(typeof(TEntity).Name).DeleteOneAsync(predicate, cancellationToken);
+            return result.DeletedCount;
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <returns></returns>
+        public long Delete<TEntity>(ISpecification<TEntity> specification) where TEntity : class, IMongoEntity<string>
+        {
+            return Delete(specification.Predicate);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public Task<long> DeleteAsync<TEntity>(ISpecification<TEntity> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            return DeleteAsync(specification.Predicate, cancellationToken);
+        }
+
+        #endregion Delete
+
+        #region Other
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <returns></returns>
+        public long Count<TEntity>(Expression<Func<TEntity, bool>> predicate)
+        {
+            return this.database.GetCollection<TEntity>(typeof(TEntity).Name).Count(predicate);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<long> CountAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await this.database.GetCollection<TEntity>(typeof(TEntity).Name).CountAsync(predicate, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <returns></returns>
+        public long Count<TEntity>(ISpecification<TEntity> specification)
+        {
+            return Count(specification.Predicate);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public Task<long> CountAsync<TEntity>(ISpecification<TEntity> specification,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            return CountAsync(specification.Predicate, cancellationToken);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <returns></returns>
+        public bool Exists<TEntity>(Expression<Func<TEntity, bool>> predicate)
+        {
+            return this.database.GetCollection<TEntity>(typeof(TEntity).Name).Find(predicate).Any();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<bool> ExistsAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            return await this.database.GetCollection<TEntity>(typeof(TEntity).Name).Find(predicate).AnyAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <returns></returns>
+        public bool Exists<TEntity>(ISpecification<TEntity> specification)
+        {
+            return Exists(specification.Predicate);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public Task<bool> ExistsAsync<TEntity>(ISpecification<TEntity> specification,
+            CancellationToken cancellationToken = new CancellationToken())
+        {
+            return ExistsAsync(specification.Predicate, cancellationToken);
+        }
+
+        #endregion Other
+
+        #region Single
+
+        /// <summary>
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <returns></returns>
+        public TEntity Single<TEntity>(string id) where TEntity : class, IMongoEntity<string>
+        {
+            return Single<TEntity>(a => a.Id == id);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="id">主键</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<TEntity> SingleAsync<TEntity>(string id, CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            return await SingleAsync<TEntity>(a => a.Id == id, cancellationToken);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <returns></returns>
+        public TEntity Single<TEntity>(Expression<Func<TEntity, bool>> predicate) where TEntity : class, IMongoEntity<string>
+        {
+            var result = this.database.GetCollection<TEntity>(typeof(TEntity).Name).FindSync(predicate);
+            return result.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="predicate">过滤条件</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<TEntity> SingleAsync<TEntity>(Expression<Func<TEntity, bool>> predicate,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            var result = await this.database.GetCollection<TEntity>(typeof(TEntity).Name).FindAsync(predicate, cancellationToken: cancellationToken);
+            return result.FirstOrDefault(cancellationToken);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <returns></returns>
+        public TEntity Single<TEntity>(ISpecification<TEntity> specification) where TEntity : class, IMongoEntity<string>
+        {
+            return Single<TEntity>(specification.Predicate);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="specification">过滤条件组合</param>
+        /// <param name="cancellationToken">异步取消凭据</param>
+        /// <returns></returns>
+        public async Task<TEntity> SingleAsync<TEntity>(ISpecification<TEntity> specification,
+            CancellationToken cancellationToken = new CancellationToken()) where TEntity : class, IMongoEntity<string>
+        {
+            return await SingleAsync<TEntity>(specification.Predicate, cancellationToken);
+        }
+
+        public async Task<ObjectId> UploadFileAsync(string filePath, string fileName, GridFSUploadOptions uploadOptions = null)
+        {
+            var gridFsBucket = new GridFSBucket(this.database);
+            using (FileStream sourceStream = File.Open(filePath, FileMode.Open))
+            {
+                GridFSUploadStream destinationStream = await gridFsBucket.OpenUploadStreamAsync(fileName, uploadOptions);
+                //一次缓冲区大小
+                long filesize = sourceStream.Length;
+                int maxlenth = 4096;
+                byte[] buffer = new byte[maxlenth];
+                while (filesize > 0)
+                {
+                    if (filesize < maxlenth)
+                    {
+                        maxlenth = (int)filesize;
+                    }
+                    await sourceStream.ReadAsync(buffer, 0, maxlenth);
+                    await destinationStream.WriteAsync(buffer, 0, maxlenth);
+                    filesize -= maxlenth;
+                }
+
+                await destinationStream.CloseAsync();
+                return destinationStream.Id;
+            }
+        }
+
+        public async Task<List<GridFSFileInfo>> FindfileByPostId(string postId, bool flag=true)
+        {
+            var gridFsBucket = new GridFSBucket(this.database);
+
+            
+            var filter = Builders<GridFSFileInfo>.Filter.And(
+            Builders<GridFSFileInfo>.Filter.Eq(x => x.Metadata["PostId"], postId)
+            );
+
+            if (flag)
+            {
+                filter = Builders<GridFSFileInfo>.Filter.And(
+            Builders<GridFSFileInfo>.Filter.Eq(x => x.Metadata["PostId"], postId),
+            Builders<GridFSFileInfo>.Filter.Eq(x => x.Metadata["Type"], 1));
+            }
+            var sort = Builders<GridFSFileInfo>.Sort.Descending(x => x.UploadDateTime);
+            var options = new GridFSFindOptions
+            {
+                Sort = sort
+            };
+            using (var cursor = await gridFsBucket.FindAsync(filter, options))
+            {
+                return await cursor.ToListAsync();
+            }
+        }
+
+        public async Task<ObjectId> UploadFileAsync(Stream sourceStream, string fileName, GridFSUploadOptions uploadOptions = null)
+        {
+            var gridFsBucket = new GridFSBucket(this.database);
+            GridFSUploadStream destinationStream = await gridFsBucket.OpenUploadStreamAsync(fileName, uploadOptions);
+            //一次缓冲区大小
+            long filesize = sourceStream.Length;
+            int maxlenth = 4096;
+            byte[] buffer = new byte[maxlenth];
+            while (filesize > 0)
+            {
+                if (filesize < maxlenth)
+                {
+                    maxlenth = (int)filesize;
+                }
+                await sourceStream.ReadAsync(buffer, 0, maxlenth);
+                await destinationStream.WriteAsync(buffer, 0, maxlenth);
+                filesize -= maxlenth;
+            }
+
+            await destinationStream.CloseAsync();
+            return destinationStream.Id;
+        }
+
+        public async Task<GridFSFileInfo> DownloadFileAsync(ObjectId id, GridFSDownloadOptions options = null)
+        {
+            var gridFsBucket = new GridFSBucket(this.database);
+            using (GridFSDownloadStream sourceStream = await gridFsBucket.OpenDownloadStreamAsync(id))
+            {
+                long filezise = sourceStream.Length;
+                //缓冲区大小
+                int maxlenth = 4096;
+                byte[] buffer = new byte[maxlenth];
+                using (FileStream destinationStream = File.Open(_confg + "/" + sourceStream.FileInfo.Filename, FileMode.Create))
+                {
+                    while (filezise > 0)
+                    {
+                        if (filezise < maxlenth)
+                        {
+                            maxlenth = (int)filezise;
+                        }
+                        await sourceStream.ReadAsync(buffer, 0, maxlenth);
+                        await destinationStream.WriteAsync(buffer, 0, maxlenth);
+                        filezise -= maxlenth;
+                    }
+                }
+                return sourceStream.FileInfo;
+            }
+        }
+
+        public async Task<GridFSFileInfo> GetFileInfoAsync(string id)
+        {
+            var gridFsBucket = new GridFSBucket(this.database);
+            using (GridFSDownloadStream sourceStream = await gridFsBucket.OpenDownloadStreamAsync(new ObjectId(id)))
+            {
+                return sourceStream.FileInfo;
+            }
+        }
+
+        public async Task<Tuple<string, MemoryStream>> DownloadFileAsync(string id, string bucketName="")
+        {
+            var gridFsBucket = string.IsNullOrEmpty(bucketName)? new GridFSBucket(this.database): new GridFSBucket(this.database, new GridFSBucketOptions
+            {
+                BucketName = bucketName
+            });
+            MemoryStream destinationStream = new MemoryStream();
+            //await gridFsBucket.DownloadToStreamAsync(id, destinationStream);
+
+            using (GridFSDownloadStream sourceStream = await gridFsBucket.OpenDownloadStreamAsync(new ObjectId(id)))
+            {
+                long filezise = sourceStream.Length;
+                //缓冲区大小
+                int maxlenth = 4096;
+                byte[] buffer = new byte[maxlenth];
+
+                while (filezise > 0)
+                {
+                    if (filezise < maxlenth)
+                    {
+                        maxlenth = (int)filezise;
+                    }
+                    await sourceStream.ReadAsync(buffer, 0, maxlenth);
+                    await destinationStream.WriteAsync(buffer, 0, maxlenth);
+                    filezise -= maxlenth;
+                }
+                return new Tuple<string, MemoryStream>(sourceStream.FileInfo.Filename, destinationStream);
+            }
+
+        }
+
+        public async Task DeleteFileAsync(string id)
+        {
+            var gridFsBucket = new GridFSBucket(this.database);
+            await gridFsBucket.DeleteAsync(new ObjectId(id));
+        }
+
+        #endregion
+
+        //#region Paged
+
+        //public IPagedList<TEntity> GetPaged<TProperty>(int pageIndex, int pageSize, Func<TEntity, TProperty> sortBy, bool isDesc = false)
+        //{
+        //    if (isDesc)
+        //        return _collection.AsQueryable().OrderByDescending(sortBy).ToPagedList(pageSize, pageIndex);
+        //    return _collection.AsQueryable().OrderBy(sortBy).ToPagedList(pageSize, pageIndex);
+        //}
+
+        //public Task<IPagedList<TEntity>> GetPagedAsync<TProperty>(int pageIndex, int pageSize, Func<TEntity, TProperty> sortBy, bool isDesc = false,
+        //    CancellationToken cancellationToken = new CancellationToken())
+        //{
+        //    return Task.Run(() => GetPaged(pageIndex, pageSize, sortBy, isDesc), cancellationToken);
+        //}
+
+
+        ///// <summary>
+        ///// </summary>
+        ///// <typeparam name="TProperty">属性</typeparam>
+        ///// <param name="pageIndex">当前页</param>
+        ///// <param name="pageSize">每页数量</param>
+        ///// <param name="keySelector">排序</param>
+        ///// <param name="predicate">过滤条件</param>
+        ///// <param name="isDesc"></param>
+        ///// <returns></returns>
+        //public IPagedList<TEntity> GetPaged<TProperty>(int pageIndex, int pageSize, Func<TEntity, TProperty> keySelector, Expression<Func<TEntity, bool>> predicate, bool isDesc = false)
+        //{
+        //    if (isDesc)
+        //        return _collection.AsQueryable().Where(predicate).OrderByDescending(keySelector).ToPagedList(pageSize, pageIndex);
+        //    return _collection.AsQueryable().Where(predicate).OrderBy(keySelector).ToPagedList(pageSize, pageIndex);
+        //}
+
+        ///// <summary>
+        ///// </summary>
+        ///// <typeparam name="TProperty">属性</typeparam>
+        ///// <param name="pageIndex">当前页</param>
+        ///// <param name="pageSize">每页数量</param>
+        ///// <param name="keySelector">排序</param>
+        ///// <param name="predicate">过滤条件</param>
+        ///// <param name="isDesc"></param>
+        ///// <param name="cancellationToken">异步取消凭据</param>
+        ///// <returns></returns>
+        //public Task<IPagedList<TEntity>> GetPagedAsync<TProperty>(int pageIndex, int pageSize, Func<TEntity, TProperty> keySelector, Expression<Func<TEntity, bool>> predicate, bool isDesc = false, CancellationToken cancellationToken = default(CancellationToken))
+        //{
+        //    return Task.Run(() => GetPaged(pageIndex, pageSize, keySelector, predicate, isDesc), cancellationToken);
+        //}
+
+        ///// <summary>
+        ///// </summary>
+        ///// <typeparam name="TProperty">属性</typeparam>
+        ///// <param name="pageIndex">当前页</param>
+        ///// <param name="pageSize">每页数量</param>
+        ///// <param name="sortBy"></param>
+        ///// <param name="specification">过滤条件组合</param>
+        ///// <param name="isDesc"></param>
+        ///// <returns></returns>
+        //public IPagedList<TEntity> GetPaged<TProperty>(int pageIndex, int pageSize, Func<TEntity, TProperty> sortBy,
+        //    ISpecification<TEntity> specification, bool isDesc = false)
+        //{
+        //    return GetPaged(pageIndex, pageSize, sortBy, specification.Predicate, isDesc);
+        //}
+
+        ///// <summary>
+        ///// </summary>
+        ///// <typeparam name="TProperty">属性</typeparam>
+        ///// <param name="pageIndex">当前页</param>
+        ///// <param name="pageSize">每页数量</param>
+        ///// <param name="sortBy"></param>
+        ///// <param name="specification">过滤条件组合</param>
+        ///// <param name="isDesc"></param>
+        ///// <param name="cancellationToken">异步取消凭据</param>
+        ///// <returns></returns>
+        //public Task<IPagedList<TEntity>> GetPagedAsync<TProperty>(int pageIndex, int pageSize,
+        //    Func<TEntity, TProperty> sortBy, ISpecification<TEntity> specification, bool isDesc = false,
+        //    CancellationToken cancellationToken = new CancellationToken())
+        //{
+        //    return GetPagedAsync(pageIndex, pageSize, sortBy, specification.Predicate, isDesc, cancellationToken);
+        //}
+
+        //#endregion
+    }
+}

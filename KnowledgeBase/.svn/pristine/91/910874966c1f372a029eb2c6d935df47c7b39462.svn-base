@@ -1,0 +1,312 @@
+﻿
+@{
+    ViewData["Title"] = "QA";
+    Layout = "~/Views/Shared/_StageLayout.cshtml";
+}
+
+<div class="col-md-12" id="qa">
+    <!-- Custom Tabs -->
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab_1" data-toggle="tab">我的草稿</a></li>
+            <li class=""><a href="#tab_2" data-toggle="tab">我的提问</a></li>
+            <li class=""><a href="#tab_3" data-toggle="tab">回答问题</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="main-box clearfix">
+                            <div class="main-box-body clearfix" style="padding-top:20px">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th><a href="#"><span>问答标题</span></a></th>
+                                                <th class="text-right"><a href="#" class="asc"><span>发帖人</span></a></th>
+                                                <th class="text-center"><span>状态</span></th>
+                                                <th class="text-center"><a href="#" class="desc"><span>创建时间</span></a></th>
+                                                <th>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="item in draft.results">
+                                                <td>
+                                                    {{item.title}}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{item.author}}
+                                                </td>
+                                                <td class="text-center" v-html="stateLable(item.state)"></td>
+                                                <td class="text-center">
+                                                    {{item.createTime}}
+                                                </td>
+                                                <td style="width: 10%;">
+                                                    <a :href="getQAUrl(item.guid)" class="table-link">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                    <a v-on:click="deleteqa(item.guid)" class="table-link danger">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="nav-box">
+                                <ul class="pagination pull-right" id="p1"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_2">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="main-box clearfix">
+                            <div class="main-box-body clearfix" style="padding-top:20px">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th><a href="#"><span>问答标题</span></a></th>
+                                                <th class="text-right"><a href="#" class="asc"><span>发帖人</span></a></th>
+                                                <th class="text-center"><span>状态</span></th>
+                                                <th class="text-center"><a href="#" class="desc"><span>创建时间</span></a></th>
+                                                <th class="text-center"><a href="#" class="desc"><span>发布时间</span></a></th>
+                                                <th>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="item in published.results">
+                                                <td>
+                                                    {{item.title}}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{item.author}}
+                                                </td>
+                                                <td class="text-center" v-html="stateLable(item.state)"></td>
+                                                <td class="text-center">
+                                                    {{item.createTime}}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{item.postTime}}
+                                                </td>
+                                                <td style="width: 5%;">
+                                                    <a :href="getQAUrl(item.guid)" class="table-link">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="nav-box">
+                                <ul class="pagination pull-right" id="p2"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.tab-pane -->
+            <div class="tab-pane" id="tab_3">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="main-box clearfix">
+                            <div class="main-box-body clearfix" style="padding-top:20px">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th><a href="#"><span>问答标题</span></a></th>
+                                                <th class="text-right"><a href="#" class="asc"><span>发帖人</span></a></th>
+                                                <th class="text-center"><span>状态</span></th>
+                                                <th class="text-center"><a href="#" class="desc"><span>创建时间</span></a></th>
+                                                <th class="text-center"><a href="#" class="desc"><span>发布时间</span></a></th>
+                                                <th>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="item in needreplys.results">
+                                                <td>
+                                                    {{item.title}}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{item.author}}
+                                                </td>
+                                                <td class="text-center" v-html="stateLable(item.state)"></td>
+                                                <td class="text-center">
+                                                    {{item.createTime}}
+                                                </td>
+                                                <td class="text-center">
+                                                    {{item.postTime}}
+                                                </td>
+                                                <td style="width: 5%;">
+                                                    <a :href="getQAUrl(item.guid)" class="table-link">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="nav-box">
+                                <ul class="pagination pull-right" id="p3"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.tab-pane -->
+        </div>
+        <!-- /.tab-content -->
+    </div>
+    <!-- nav-tabs-custom -->
+</div>
+@section Scripts{ 
+<script>
+    var vm = new Vue({
+        // 选项
+        el: '#qa',
+        data: {
+            draft: {},
+            published: {},
+            needreplys: {},
+        },
+        methods: {
+            init: function () {
+                this.getdraft(1); 
+                this.getpublished(1);
+                this.getneedreplys(1);
+             },
+            getdraft: function (index) {
+                API.POST(
+                    '@Url.Action("GetMyDraftList", "Stage")',
+                    {
+                        pageindex: index,
+                        pagesize:8
+                    }).then(ret =>
+                    {
+                        this.draft = ret;
+                        $('#p1').pagination({
+                            items: ret.total,
+                            itemsOnPage: 8,
+                            currentPage: index,
+                            prevText: '上一页',
+                            nextText: '下一页',
+                            cssStyle: 'light-theme',
+                            onPageClick: function (page, event) {
+                                vm.getdraft(page);
+                            }
+                        })
+                    });
+            },
+            getpublished: function (index) {
+                API.POST(
+                    '@Url.Action("GetMyQAList", "Stage")',
+                    {
+                        pageindex: index,
+                        pagesize: 8
+                    }).then(ret =>
+                    {
+                        this.published = ret;
+                        $('#p2').pagination({
+                            items: ret.total,
+                            itemsOnPage: 8,
+                            currentPage: index,
+                            prevText: '上一页',
+                            nextText: '下一页',
+                            cssStyle: 'light-theme',
+                            onPageClick: function (page, event) {
+                                vm.getpublished(page);
+                            }
+                        })
+                    });
+            },
+            getneedreplys: function (index) {
+                API.POST(
+                    '@Url.Action("GetMyNeedReplys", "Stage")',
+                    {
+                        pageindex: index,
+                        pagesize: 8
+                    }).then(ret =>
+                    {
+                        this.needreplys = ret;
+                        $('#p3').pagination({
+                            items: ret.total,
+                            itemsOnPage: 8,
+                            currentPage: index,
+                            prevText: '上一页',
+                            nextText: '下一页',
+                            cssStyle: 'light-theme',
+                            onPageClick: function (page, event) {
+                                vm.getneedreplys(page);
+                            }
+                        })
+                    });
+            },
+            deleteqa: function (postguid) {
+
+                 layer.confirm('您确定要删除当前草稿么？', {
+                        btn: ['确定', '取消'] //按钮
+                    }, function () {
+                        API.POST(
+                        '@Url.Action("DeleteQA", "Stage")',
+                        {
+                            guid: postguid
+                        }).then(ret =>
+                        {
+                            layer.alert('删除成功');
+                            vm.getdraft(vm.$data.draft.page);
+                            //reply.likes--;
+                        }).catch(ret => layer.alert('抱歉,操作失败'));
+                    }, function () {
+
+                    });
+            },
+            stateLable:function (state) {
+                switch (state) {
+                    case 0:
+                        return '<span class="label label-warning">草稿</span>'
+                        break;
+                    case 1:
+                        return '<span class="label label-warning">发布中</span>'
+                        break;
+                    case 2:
+                        return '<span class="label label-primary">解决中</span>'
+                        break;
+                    case 3:
+                        return '<span class="label label-success">已完结</span>'
+                        break;
+                }
+            },
+            getQAUrl: function (guid) {
+
+                return '/KonwledgeBackend/QAPublish/QADetail?postguid=' + guid;
+            }
+        }
+    });
+
+    $(document).ready(function () {
+
+        vm.init();
+
+    });
+</script>
+    }

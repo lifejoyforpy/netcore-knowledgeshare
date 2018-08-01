@@ -1,0 +1,32 @@
+﻿using Nest;
+using System;
+
+
+
+namespace BoeSj.KnowledgeBase.Domain.Model.Search
+{
+
+    public class post
+    {
+
+        public string title { get; set; }
+
+        public int views{ get; set; }
+
+        public string tag { get; set; }
+
+
+        //[Text(Analyzer = "ik_max_word")]
+         public string category { get; set; }
+
+        public string content { get; set; }
+
+        public DateTime createTime { get; set; }
+
+        // 0 知识分享 ,1问答
+        public int type { get; set; } = 0;
+
+        //关联主表的guid
+        public string PostGuid { get; set; }
+    }
+}

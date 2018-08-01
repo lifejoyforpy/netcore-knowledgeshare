@@ -1,0 +1,15 @@
+﻿using BoeSj.KnowledgeBase.Application.DTO.Input;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Application.Interface
+{
+    public interface IQAPublishApp
+    {
+        Task QASave(QAPublishInput input);
+        Task Publish(int id);
+
+    }
+}

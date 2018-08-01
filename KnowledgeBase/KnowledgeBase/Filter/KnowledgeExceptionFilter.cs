@@ -1,0 +1,32 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Web.Filter
+{
+    public class KnowledgeExceptionFilter : IExceptionFilter, IAsyncExceptionFilter, IFilterMetadata
+    {
+        public void OnException(ExceptionContext context)
+        {
+            if (context.ExceptionHandled == false)
+            {
+                string msg = context.Exception.Message;
+                //log exception
+
+                context.Result = new ContentResult
+                {
+                    Content = msg,
+                    StatusCode = StatusCodes.Status200OK,
+                    ContentType = "text/html;charset=utf-8"
+                };
+            }
+        }
+
+        public Task OnExceptionAsync(ExceptionContext context)
+        {
+            OnException(context);
+            return Task.CompletedTask;
+        }
+    }
+}

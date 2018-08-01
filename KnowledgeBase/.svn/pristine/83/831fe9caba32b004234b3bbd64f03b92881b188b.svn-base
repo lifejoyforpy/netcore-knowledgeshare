@@ -1,0 +1,167 @@
+﻿@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS{
+    <link href="~/lib/summernote/summernote.css" rel="stylesheet" />
+    <style>
+
+        .post-title {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .post-meta {
+            text-align: center;
+        }
+
+        .post-body {
+            padding: 0;
+        }
+
+        .site-box {
+            padding-bottom: 20px;
+            background: #fff;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        }
+        .tli {
+            list-style: none;
+
+            padding-top: 5px;
+            padding-bottom: 30px;
+            padding-left: 5px;
+            border-bottom: 1px solid #dddddd;
+        }
+        .pagenation {
+            padding-left: 25px;
+            font-size: 14px;
+        }
+        .a {
+            font-size: 15px;
+            font-family: "微软雅黑";
+            color:#040404 ;
+        }
+        .hheader {
+            font-family: "微软雅黑";
+            color: #040404;
+            font-weight:bold;
+        }
+    </style>
+
+}
+<div  id="list" class="container-fluid" style="background:#f4f4f4">
+    <div class="archives-posts new-shuo col-md-9 site-box">
+        <div class="package-header">
+            <h4 class="hheader">
+                个人列表中心
+            </h4>
+        </div>
+        <div class="articles-list">
+            <ul>
+                <li class="tli" v-for="item in list">
+                    <div class="col-md-9">
+                        <span>
+                            <a  class="a" v-bind:href="combine(item.guid)">
+                                {{item.title}}
+                            </a>
+                        </span>
+                    </div>
+                    <em>
+                        {{dateformate(item.createTime)}}
+                    </em>
+                </li>
+            </ul>
+        </div>
+        <div class="ibox-footer pagenation">
+            <div class="row">
+                <div class="col-md-3 col-sm-12 ">总计{{ totalCount || 0 }}条，每页显示{{ pageSize || 5 }}条</div>
+                <div class="col-md-9 col-sm-12 text-right" id="Pagination">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="col-md-11 sidebar" style="background:#fff ; margin-left:10px ">
+            <div class="side-nav">
+                <span class="current">文章目录</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+
+<script type="text/javascript">
+
+        var vm = new Vue({
+            el:'#list',
+            data: {
+                list: [],
+                JobNum: '1011',
+                pageSize: 10,
+                totalCount: 0
+            },
+            methods: {
+
+                init: function () {
+                    vm.getData(1, 1);
+                },
+                pageInit: function () {
+                    var self = this;
+                    new PluginReset('simplePagination', "#Pagination", {
+                        itemsOnPage: self.pageSize,
+                        items: self.totalCount,
+                        onPageClick: function (page, event) {
+                            self.getData(page);
+                        }
+                    });
+                },
+
+                getData: function (page, _isInit) {
+
+                      $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("GetMyKnowledgeShareList", "BackendManage",new { area="KonwledgeBackend"})",
+                        data: {
+                            JobNum: vm.$data.JobNum,
+                            PageSize: vm.$data.pageSize,
+                            PageIndex:page,
+                        },
+                        success: function (result) {
+
+                            vm.$data.totalCount = result.totalCount;
+                            vm.$data.list = result.data;
+                            if (_isInit)
+                                vm.pageInit();
+                        },
+                        error: function (e) {
+                        }
+                    });
+
+                },
+                dateformate: function (date) {
+
+                    var result = new Date(date.replace('T', " ")).pattern("yyyy-MM-dd HH:mm:ss")
+
+                    return result
+                },
+                combine: function (guid) {
+
+                    var result = '@Url.Action("Details", "BackendManage", new { area = "KonwledgeBackend" })' + '?Id=' + guid;
+                    return result;
+
+                }
+
+            }
+
+        });
+        $(function () {
+
+            vm.init();
+            vm.pageInit();
+        });
+</script>
+
+}

@@ -1,0 +1,112 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
+using SSOManagerLib.Model;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+
+namespace SSOManagerLib
+{
+    public class AuthorizeMiddleware
+    {
+        private readonly RequestDelegate _next;
+        private string _noauth_url;
+        private string _login_url;
+
+        // noauth_url 没权限地址
+        // login_url 登录地址
+        public AuthorizeMiddleware(RequestDelegate next, string noauth_url, string login_url)
+        {
+            _next = next;
+            _noauth_url = noauth_url;
+            _login_url = login_url;
+        }
+
+        public async Task InvokeAsync(HttpContext context)
+        {
+            //wwwroot 目录下静态文件
+
+            //获取服务实例
+            var _sso = (SSOHelper)context.RequestServices.GetService(typeof(SSOHelper));
+
+            var attr = (AddAttibute)context.RequestServices.GetService(typeof(AddAttibute));
+
+            //过滤标签特性
+            var route= context.Features.Get<IRoutingFeature>().RouteData.Values;
+            if (attr.GetControllerAttr(route["controller"].ToString()) || attr.GetActionAttr(route["action"].ToString(), route["controller"].ToString()))
+            {
+                await this._next(context);
+                return;
+            }
+            // ajax 请求
+            if (context.Request.Headers.ContainsKey("x-requested-with"))
+            {
+                // Call the next delegate/middleware in the pipeline
+                await this._next(context);
+                return;
+            }
+            var token = context.Request.Query["token"].FirstOrDefault<string>();
+            //第一次请求带token
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                //获取jsonp的参数
+                context.Session.SetString("token", token);
+                var userinfo = await _sso.ExistToken(token);
+                context.Session.Set<UserSSOInfo>("userinfo", userinfo);
+                context.Session.SetString("loginurl", _login_url);
+                var callback = context.Request.Query["callback"];
+                context.Response.Cookies.Append("stoken", token);
+                
+                await context.Response.WriteAsync(callback + "([{msg: \"hello world! \"}])");
+                return;
+            }
+            else
+            {
+                string stoken = "";
+                context.Request.Cookies.TryGetValue("stoken", out stoken);
+                if (context.Session.GetString("token") != null)
+                {
+                    //匿名属性可以任何用户都可以访问
+                    var t = context.Request.Method;
+                    var userinfo = await _sso.ExistToken(context.Session.GetString("token"));
+                    if (userinfo != null)
+                    {
+                        //token信息存在
+                        //判断是否有当前访问url的权限;
+                        if (context.Request.GetAbsoluteUri().Contains("?flag="))
+                        {
+                            if (!userinfo.RoleList.Any(o => o.MenuList.Any(i => i.Menu_Url.Split('&')[0].TrimEnd() == context.Request.GetAbsoluteUri().Split('&')[0].TrimEnd())))
+                            {
+                                //没有权限
+                                context.Response.Redirect(_noauth_url);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            if (!userinfo.RoleList.Any(o => o.MenuList.Any(i => i.Menu_Url.Split('?')[0].TrimEnd() == context.Request.GetAbsoluteUri().Split('?')[0].TrimEnd())))
+                            {
+                                //没有权限
+                                context.Response.Redirect(_noauth_url);
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //认证中心没有记录，因此需要跳登陆，同时清楚session
+                        await _sso.RemoveToekn(context.Session.GetString("token"));
+                        context.Session.Clear();
+                        context.Response.Redirect($"{_login_url}?ReturnUrl=" + WebUtility.UrlEncode(context.Request.GetAbsoluteUri()));
+                    }
+                }
+                else
+                {
+                    context.Response.Redirect($"{_login_url}?ReturnUrl=" + WebUtility.UrlEncode(context.Request.GetAbsoluteUri()));
+                    return;
+                }
+                await this._next(context);
+            }
+        }
+    }
+}

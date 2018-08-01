@@ -1,0 +1,303 @@
+﻿@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_StageLayout.cshtml";
+}
+
+
+<div class="col-md-12" id="sharelist">
+    <!-- Custom Tabs -->
+    <div class="nav-tabs-custom">
+        <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab_1" data-toggle="tab">我的草稿</a></li>
+            <li class=""><a href="#tab_2" data-toggle="tab">我的分享</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="tab_1">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="main-box clearfix">
+                            <div class="main-box-body clearfix" style="padding-top:20px">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th><a href="#"><span>标题</span></a></th>
+                                                <th class="text-right"><a href="#" class="asc"><span>发帖人</span></a></th>
+                                                <th class="text-center"><span>状态</span></th>
+                                                <th class="text-center"><a href="#" class="desc"><span>创建时间</span></a></th>
+                                                <th>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item,index) in draftlist">
+                                                <td>
+                                                    {{item.title}}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{item.author}}
+                                                </td>
+                                                @*v-html="stateLable(item.status)"*@
+                                                <td class="text-center" v-html="stateLable(item.status)"></td>
+                                                <td class="text-center">
+                                                    {{item.createTime}}
+                                                </td>
+                                                <td style="width: 10%;">
+                                                    <a v-bind:href="'@Url.Action("Publish","KnowLedgePublish")'+'?id='+item.guid" class="table-link">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-pencil fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                    <a v-on:click="deleteshare(item.guid,index,0)" class="table-link danger">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="nav-box">
+                                <ul class="pagination pull-right" id="p1"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane" id="tab_2">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="main-box clearfix">
+                            <div class="main-box-body clearfix" style="padding-top:20px">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th><a href="#"><span>问答标题</span></a></th>
+                                                <th class="text-right"><a href="#" class="asc"><span>发帖人</span></a></th>
+                                                <th class="text-center"><span>状态</span></th>
+                                                <th class="text-center"><a href="#" class="desc"><span>创建时间</span></a></th>
+
+                                                <th>&nbsp;</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(item ,index) in list">
+                                                <td>
+                                                    {{item.title}}
+                                                </td>
+                                                <td class="text-right">
+                                                    {{item.author}}
+                                                </td>
+                                                <td class="text-center" v-html="stateLable(item.status)"></td>
+                                                <td class="text-center">
+                                                    {{item.createTime}}
+                                                </td>
+
+                                                <td style="width: 10%;">
+                                                    <a v-bind:href="'@Url.Action("Details","BackendManage")'+'?id='+item.guid" class="table-link">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                    <a v-on:click="deleteshare(item.guid,index,1)" class="table-link danger">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-trash-o fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="nav-box">
+                                <ul class="pagination pull-right" id="p2"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- nav-tabs-custom -->
+    </div>
+
+@section Scripts{
+<div>
+    <script type="text/javascript">
+
+    var vm = new Vue({
+        el: '#sharelist',
+        data: {
+            list: [],
+            draftlist: [],
+            JobNum: '1011',
+            draft: {
+
+                pageSize: 10,
+                totalCount: 0
+
+            },
+            publish: {
+                pageSize: 10,
+                totalCount: 0
+            }
+
+
+        },
+        methods: {
+
+            init: function () {
+                vm.getDraft(1, 1);
+                vm.getPublished(1, 1)
+            },
+            publishipageInit: function () {
+                var self = this;
+                new PluginReset('simplePagination', "#p2", {
+                    itemsOnPage: self.publish.pageSize,
+                    items: self.publish.totalCount,
+                    onPageClick: function (page, event) {
+                        self.getPublished(page);
+                    }
+                });
+            },
+            draftpageInit: function () {
+                var self = this;
+                new PluginReset('simplePagination', "#p1", {
+                    itemsOnPage: self.draft.pageSize,
+                    items: self.draft.totalCount,
+                    onPageClick: function (page, event) {
+                        self.getDraft(page);
+                    }
+                });
+            },
+
+            getDraft: function (page, _isInit) {
+                $("#fakeLoader").fakeLoader({ spinner: "spinner2" });
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetMyKnowledgeShareList", "BackendManage")",
+                    data: {
+                        JobNum: vm.$data.JobNum,
+                        pageindex: page,
+                        pagesize: 8,
+                        Status: 0
+                    },
+                    success: function (ret) {
+                        $("#fakeLoader").fakeHide();
+                        if (ret.status == "1") {
+                            vm.$data.draft.totalCount = ret.totalCount;
+                            vm.$data.draftlist = ret.data;
+                            if (_isInit)
+                                vm.draftpageInit();
+                        }
+                        else {
+                            console.log("服务器内部异常")
+                            $("#fakeLoader").fakeHide();
+                        }
+                    },
+                    error: function (e) {
+                        $("#fakeLoader").fakeHide();
+                    }
+                });
+
+            },
+
+            getPublished: function (page, _isInit) {
+
+                $("#fakeLoader").fakeLoader({ spinner: "spinner2" });
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("GetMyKnowledgeShareList", "BackendManage")",
+                    data: {
+                        JobNum: vm.$data.JobNum,
+                        pageindex: page,
+                        pagesize: 8,
+                        Status: 1
+                    },
+                    success: function (ret) {
+                        $("#fakeLoader").fakeHide();
+                        if (ret.status == "1") {
+                            vm.$data.publish.totalCount = ret.totalCount;
+                            vm.$data.list = ret.data;
+                            if (_isInit)
+                                vm.publishipageInit();
+                        }
+                        else {
+                            console.log("服务器内部异常")
+                            $("#fakeLoader").fakeHide();
+                        }
+                    },
+                    error: function (e) {
+                        $("#fakeLoader").fakeHide();
+                    }
+                });
+
+            },
+            stateLable: function (state) {
+                switch (state) {
+                    case 0:
+                        return '<span class="label label-warning">草稿</span>'
+                        break;
+                    case 1:
+                        return '<span class="label label-warning">已发布</span>'
+                        break;
+                    case 2:
+                        return '<span class="label label-primary">解决中</span>'
+                        break;
+                    case 3:
+                        return '<span class="label label-success">已完结</span>'
+                        break;
+                }
+            },
+
+            deleteshare: function (guid,index,type) { 
+
+                $("#fakeLoader").fakeLoader({ spinner: "spinner2" });
+                if (guid == "")
+                    return;
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("DelMyKnowledgeShare", "BackendManage")",
+                    data: {
+                        id: guid
+                    },
+                    success: function (ret) {
+                        $("#fakeLoader").fakeHide();
+                        if (ret.status == "1") {
+                        //移除删除元素;
+                            if(type==0)
+                                vm.$data.draftlist.splice(index, 1);
+                            else
+                                vm.$data.list.splice(index, 1);
+                        }
+                        else {
+                            console.log("服务器内部异常")
+                            $("#fakeLoader").fakeHide();
+                        }
+                    },
+                    error: function (e) {
+                        $("#fakeLoader").fakeHide();
+                    }
+                });
+            }
+        }
+
+        });
+        $(function () {
+
+            vm.init();
+            vm.publishipageInit();
+            vm.draftpageInit();
+           
+        });
+    </script>
+</div>
+
+}

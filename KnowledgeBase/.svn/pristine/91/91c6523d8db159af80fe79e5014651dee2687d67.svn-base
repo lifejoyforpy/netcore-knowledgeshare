@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Domain.Model
+{
+    public class FileShare
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string JobNum { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+        public string Category { get; set; }
+
+        public Guid Guid { get; set; }
+
+        public string Content { get; set; }
+
+        public string Tag { get; set; }
+
+        public int Views { get; set; }
+
+        public int Likes { get; set; }
+
+    }
+}

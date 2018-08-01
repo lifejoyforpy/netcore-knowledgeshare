@@ -1,0 +1,136 @@
+﻿using AutoMapper;
+using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.DTO.Output;
+using BoeSj.KnowledgeBase.Application.DTO.OutPut;
+using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Domain.Model;
+using BoeSj.KnowledgeBase.Domain.Model.Mongo;
+using BoeSj.KnowledgeBase.Domain.Model.Response;
+using BoeSj.KnowledgeBase.Infrastructure.ExpressionTree;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Application.Service
+{
+    public class FieldShareApp : IFieldShareApp
+    {
+        private IRepository<FileShare> _repository;
+        private IMongoRepository _mongoRepository;
+        private IMapper _mapper;
+
+        public FieldShareApp(IRepository<FileShare> fsRepository, IMongoRepository mongoRepository, IMapper mapper)
+        {
+            _repository = fsRepository;
+            _mongoRepository = mongoRepository;
+            _mapper = mapper;
+        }
+
+        public async Task<Response<KnowledegeShareDetail>> GetKnowledgeShareDetail(string id)
+        {
+            Response<KnowledegeShareDetail> response = new Response<KnowledegeShareDetail>();
+            try
+            {
+                KnowledegeShareDetail knowledegeShareDetail = new KnowledegeShareDetail();
+                FileShare exp = _repository.Get(x => x.Guid == id).FirstOrDefault<FileShare>();
+                var post = await _mongoRepository.QueryAsync<Post>(x => x.PostGuid == id);
+                var postresult = post.FirstOrDefault();
+                knowledegeShareDetail.Author = exp.Author;
+                knowledegeShareDetail.CreateTime = exp.CreateTime;
+                knowledegeShareDetail.Guid = exp.Guid;
+                knowledegeShareDetail.JobNum = exp.JobNum;
+                knowledegeShareDetail.Likes = exp.Likes;
+                knowledegeShareDetail.Status = exp.Status;
+                knowledegeShareDetail.PostGuid = postresult.PostGuid;
+                knowledegeShareDetail.Category = postresult.Category;
+                knowledegeShareDetail.Content = postresult.Content;
+                knowledegeShareDetail.Tag = postresult.Tag;
+                knowledegeShareDetail.Title = postresult.Title;
+                knowledegeShareDetail.Type = postresult.Type;
+                response.Data = knowledegeShareDetail;
+            }
+            catch (Exception ex)
+            {
+                response.Status = 1;
+                response.Msg = ex.Message.ToString();
+            }
+            return response;
+        }
+
+        public async Task ExcutePost(FileShare TEntity, int id = 0)
+        {
+            if (id == 0)
+            {
+                await _repository.InsertAsync(TEntity);
+            }
+            if (id == 1)
+            {
+                await _repository.UpdateAsync(TEntity);
+            }
+            _repository.SaveChanges();
+        }
+
+        //查询我的知识分享列表
+        public Response<List<KnowledegeShareList>> GetMyKnowledgeShareList(KnowledegeInput input)
+        {
+            Response<List<KnowledegeShareList>> response = new Response<List<KnowledegeShareList>>();
+
+            try
+            {
+                List<KnowledegeShareList> knowledegeShareLists = new List<KnowledegeShareList>();
+                Expression<Func<FileShare, bool>> filter = x => x.JobNum == input.JobNum;
+                Func<IQueryable<FileShare>, IOrderedQueryable<FileShare>> orderBy = x => x.OrderByDescending(o => o.CreateTime);
+                //计算总数目
+                response.TotalCount = _repository.Get(filter, orderBy).Count();
+                response.PageIndex = input.PageIndex;
+                response.PageSize = input.PageSize;
+                //查询
+                var queryresult = _repository.Get(filter, orderBy).Skip((input.PageIndex - 1) * input.PageSize).Take(input.PageSize).ToList();
+                //knowledegeShareList.Titile=queryresult
+                foreach (var item in queryresult)
+                {
+                    KnowledegeShareList knowledegeShareList = new KnowledegeShareList();
+                    knowledegeShareList = ExpressionGenericMapper<FileShare, KnowledegeShareList>.Trans(item);
+                    knowledegeShareLists.Add(knowledegeShareList);
+                }
+                response.Data = knowledegeShareLists;
+            }
+            catch (Exception ex)
+            {
+                response.Status = 1;
+                response.Msg = ex.Message.ToString();
+            }
+            return response;
+        }
+
+        //发布知识分享
+        public async Task<Response<string>> MyKnowledgeSharePublish(KnowledegeInput input)
+        {
+            Response<string> response = new Response<string>();
+            try
+            {
+                if (string.IsNullOrEmpty(input.Guid))
+                {
+                    input.Guid = Guid.NewGuid().ToString();
+                }
+                input.PostGuid = input.Guid;
+                FileShare fileShare = new FileShare();
+                Post post = new Post();
+                fileShare = ExpressionGenericMapper<KnowledegeInput, FileShare>.Trans(input);
+                post = ExpressionGenericMapper<KnowledegeInput, Post>.Trans(input);
+                await _mongoRepository.InsertAsync(post);
+                await _repository.InsertAsync(fileShare);
+                _repository.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                response.Status = 1;
+                response.Msg = ex.Message.ToString();
+            }
+            return response;
+        }
+    }
+}

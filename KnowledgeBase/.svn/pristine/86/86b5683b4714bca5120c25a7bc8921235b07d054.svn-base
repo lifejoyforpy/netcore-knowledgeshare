@@ -1,0 +1,36 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/csdn.css" rel="stylesheet" />
+<div class="row row-offcanvas row-offcanvas-right main-wrapper" style="padding-left:100px;padding-right:100px;padding-top:20px;padding-bottom:20px">
+    <div class="col-6 col-md-2 sidebar-offcanvas" id="sidebar">
+        <div class="list-group-item list-group-title">内容</div>
+        <div class="list-group">
+            <a href="@Url.Action("index", "stage", new { area= "KonwledgeBackend"})" class="list-group-item none" data-title="article">我的分享1</a>
+            <a href="@Url.Action("qa", "stage", new { area= "KonwledgeBackend"})" class="list-group-item none" data-title="article">你问我答</a>
+            <a href="#" class="list-group-item none" data-title="article">我的分享3</a>
+            <a href="#" class="list-group-item">个人分类管理</a>
+            <a href="#" class="list-group-item none">我的分享 <span class="newDom">new</span>  </a>
+        </div>
+        <div class="list-group-item list-group-title">设置</div>
+        <div class="list-group">
+            <a href="#" class="list-group-item none" data-title="blogsetting">博客设置</a>
+            <a href="#" class="list-group-item none" data-title="blogsetting">栏目管理</a>
+        </div>
+    </div>
+    <div class="col-12 col-md-10" id="content-body">
+        @RenderBody()
+    </div>
+</div>
+@section Scripts
+    {
+    <script>
+        var menus = $("#sidebar .list-group [href!='#']");
+        for (var i = 0; i < menus.length; i++) {
+            if (menus[i].href == window.location.href) {
+                $(menus[i]).addClass('active');
+            }
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+}

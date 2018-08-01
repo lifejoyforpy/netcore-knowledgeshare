@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewData["Title"] = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid" style="background:#f4f4f4">
+    <div>
+        <ul class="col-md-9">
+            <li>sadsda</li>
+            <li>ads</li>
+            <li>adsds</li>
+            <li>adds</li>
+            <li>adds</li>
+            <li>sdds</li>
+            <li>sadds</li>
+            <li>sadds</li>
+            <li>asddsa</li>
+        </ul>
+    </div>
+    
+</div>
+
+
+

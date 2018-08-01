@@ -1,0 +1,13 @@
+E:\KnowledgeBase\SSOManager\bin\Release\netcoreapp2.0\SSOManagerLib.deps.json
+E:\KnowledgeBase\SSOManager\bin\Release\netcoreapp2.0\SSOManagerLib.dll
+E:\KnowledgeBase\SSOManager\bin\Release\netcoreapp2.0\SSOManagerLib.pdb
+E:\KnowledgeBase\SSOManager\bin\Release\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Abstractions.dll
+E:\KnowledgeBase\SSOManager\bin\Release\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Core.dll
+E:\KnowledgeBase\SSOManager\bin\Release\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Abstractions.xml
+E:\KnowledgeBase\SSOManager\bin\Release\netcoreapp2.0\Microsoft.AspNetCore.Mvc.Core.xml
+E:\KnowledgeBase\SSOManager\obj\Release\netcoreapp2.0\SSOManagerLib.csproj.CoreCompileInputs.cache
+E:\KnowledgeBase\SSOManager\obj\Release\netcoreapp2.0\SSOManagerLib.AssemblyInfoInputs.cache
+E:\KnowledgeBase\SSOManager\obj\Release\netcoreapp2.0\SSOManagerLib.AssemblyInfo.cs
+E:\KnowledgeBase\SSOManager\obj\Release\netcoreapp2.0\SSOManagerLib.csproj.CopyComplete
+E:\KnowledgeBase\SSOManager\obj\Release\netcoreapp2.0\SSOManagerLib.dll
+E:\KnowledgeBase\SSOManager\obj\Release\netcoreapp2.0\SSOManagerLib.pdb

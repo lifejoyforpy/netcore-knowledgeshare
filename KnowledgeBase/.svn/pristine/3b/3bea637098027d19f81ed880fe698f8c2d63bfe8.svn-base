@@ -1,0 +1,141 @@
+﻿
+@{
+    ViewData["Title"] = "Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section CSS{
+    <link href="~/lib/summernote/summernote.css" rel="stylesheet" />
+    <style>
+
+        .post-title {
+            text-align: center;
+            font-size: 24px;
+        }
+
+        .post-meta {
+            text-align: center;
+        }
+
+        .post-body {
+            padding: 0;
+        }
+
+        .site-box {
+            padding-bottom: 20px;
+            background: #fff;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.1);
+        }
+    </style>
+
+}
+
+
+<div class="container-fluid" style="background:#f4f4f4  ">
+    <article id="article" class="col-md-9  site-box">
+        <h1 class="post-title">{{dataresult.title}}</h1>
+        <div class="post-meta">
+            <span class="post-time">
+                <i class="demo-icon icon-calendar"></i>
+                {{dataresult.createtime}}
+            </span>
+            <span class="post-category">
+                <i class="demo-icon icon-folder-open "></i>
+                {{dataresult.catagory}}
+            </span>
+            <span class="post-comments-count">
+                <i class="demo-icon icon-comment"></i>
+                {{dataresult.Views}}
+            </span>
+            <span class="post-comments-count">
+                <i class="demo-icon icon-eye-close"></i>
+                {{dataresult.Likes}}
+            </span>
+        </div>
+        <div id="content" class="post-body">
+            {{dataresult.content}}
+        </div>
+        <div class=" post-tags" v-for="item in Tags">
+            <a href="">
+                <i class="icon-tags">
+                </i>
+                {{item}}
+            </a>
+        </div>
+        <div>
+        </div>
+        <button id="edit" class="btn btn-primary" v-on:click="edit" type="button">Edit 1</button>
+        <button id="save" class="btn btn-primary" v-on:click="save" type="button">Save 2</button>
+
+        <div class="click2edit">click2edit</div>
+        <div id="summernote"></div>
+    </article>
+
+    <div class="col-md-2 sidebar" style="background:#fff ; margin-left:10px ">
+        <div class="side-nav">
+            <span class="current">文章目录</span>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script src="~/lib/summernote/summernote.min.js"></script>
+    <script src="~/lib/summernote/summernote-zh-CN.js"></script>
+    <script type="text/javascript">
+        var vm = new Vue({
+            el: '#article',
+            data: {
+                dataresult: {
+                    title: "知识分享",
+                    author: 'ABC',
+                    createtime: '2018-06-07',
+                    catagory: 'MES',
+                    Views: 0,
+                    Likes: 0,
+                    content: '',
+                    Tag: ''
+
+                },
+                Tags: ['分享', 'MES']
+            },
+            methods: {
+                init: function () {
+
+
+
+                },
+                edit: function () {
+                    $('.click2edit').summernote({ focus: true });
+                },
+                save: function () {
+
+                    var markup = $('.click2edit').summernote('code');
+                    $('.click2edit').summernote('destroy');
+                    $.ajax({
+                        url:'/KonwledgeBackend/BackendManage/Publish',
+                        //url: "@Url.Action("Publish", "BackendManage", new {area= "KonwledgeBackend"})",
+                        type: 'POST',
+                        data: { content: markup },
+                        success: function (data) {
+
+                        }
+
+                    });
+                }
+
+            }
+        });
+        $(function () {
+            //$('#summernote').summernote({
+            //    //airMode: true,
+            //    lang: 'zh-CN',
+            //    height: 300,
+            //    minHeight: 200
+            //});
+            vm.init();
+        });
+
+    </script>
+}
+

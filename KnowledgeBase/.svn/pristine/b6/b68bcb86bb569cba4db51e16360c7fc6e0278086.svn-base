@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <AssemblyName>BoeSj.KnowledgeBase.Web</AssemblyName>
+    <RootNamespace>BoeSj.KnowledgeBase.Web</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\require.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.8.1" />
+    <PackageReference Include="Autofac.Configuration" Version="4.0.1" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
+    <PackageReference Include="AutoMapper" Version="6.2.2" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
+    <PackageReference Include="Markdown" Version="2.2.1" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.3" />
+    <PackageReference Include="MongoDB.Driver" Version="2.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Boe.Sj.Application\BoeSj.KnowledgeBase.Application.csproj" />
+    <ProjectReference Include="..\Boe.Sj.Domain\BoeSj.KnowledgeBase.Domain.csproj" />
+    <ProjectReference Include="..\Boe.Sj.Repository\BoeSj.KnowledgeBase.Repository.csproj" />
+    <ProjectReference Include="..\BoeSj.KnowledgeBase.Infrastructure\BoeSj.KnowledgeBase.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\KonwledgeBackend\Data\" />
+    <Folder Include="Areas\KonwledgeBackend\Models\" />
+    <Folder Include="wwwroot\file\upload\" />
+    <Folder Include="wwwroot\file\download\" />
+    <Folder Include="wwwroot\lib\vue\" />
+  </ItemGroup>
+
+</Project>

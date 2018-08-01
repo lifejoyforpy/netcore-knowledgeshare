@@ -1,0 +1,131 @@
+﻿
+@{
+    ViewData["Title"] = "Publish";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS
+    {
+    <link href="~/lib/summernote/summernote.css" rel="stylesheet" />
+    <link href="~/lib/jqueryuploadfile/uploadfile.css" rel="stylesheet" />
+    <style>
+        .boxsha {
+            border: 1px solid #e9e9e9;
+            box-shadow: -1px -1px 4px #e9e9e9;
+            background: #fff
+        }
+        .innerform{
+            margin-left:15px
+        }
+
+        .buttongroup{
+            text-align:center;
+            padding-top:10px
+        }
+    </style>
+}
+<div class="page-container" style="background:#f4f4f4" id="kbpublish">
+    <div class="container" style="background:#f4f4f4">
+        <div class="row">
+
+            <div class="col-md-12 col-sm-12 col-lg-12 page-content boxsha">
+                <form class="col-md-12 col-sm-12 col-lg-12">
+                    <article class="type-page hentry clearfix">
+                        <h2 class="post-title">分享发布</h2>
+                        <hr>
+                    </article>
+                    <div class="form-group form-inline">
+                        <input type="text" name="name" id="name" class="form-control required" value="" placeholder="请输入分享标题" style="width:100%" />
+                    </div>
+                    <div class="form-group form-inline">
+                        <div id="summernote"></div>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2 col-sm-2 col-lg-2">附件上传：</label>
+                        <div class="col-md-10 col-sm-10 col-lg-10">
+                            <div id="fileuploader"><label>请选择Excel文件</label></div>
+                            <div id="extrabutton" class="ajax-file-upload-green">上传</div>
+                        </div>
+                    </div>
+                    <div class="form-group form-inline">
+                        <label class="col-md-2 col-sm-2 col-lg-2">标签：</label>
+                        <input class="col-md-4 col-sm-4 col-lg-4 form-control innerform" type="text" name="Nam1e" style="" placeholder="...">
+                        <label class="col-md-2 col-sm-2 col-lg-2">分类：</label>
+                        <input class="col-md-4 col-sm-4 col-lg-4 form-control innerform" type="text" name="Nam1e" style="" placeholder="...">
+                    </div>
+                    <div class="form-group form-inline">
+                        <div class="col-md-12 col-sm-12 col-lg-12 buttongroup">
+                            <a v-on:click="" class="btn btn-primary">
+                                <i class="fa fa-plus-circle fa-lg"></i> 发布分享
+                            </a>
+                            <a v-on:click="" class="btn btn-default">
+                                <i class="fa fa-plus-circle fa-lg"></i> 返回
+                            </a>
+                        </div>
+                        
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script src="~/lib/summernote/summernote.min.js"></script>
+    <script src="~/lib/summernote/summernote-zh-CN.js"></script>
+    <script src="~/lib/jqueryuploadfile/jquery.uploadfile.min.js" charset="gb2312"></script>
+    <script>
+        var vm = new Vue({
+            // 选项
+            el: '#kbpublish',
+            data: {
+            },
+            methods: {
+                init: function () {
+                    var extraObj = $("#fileuploader").uploadFile({
+                        url: "@Url.Action("UploadFiles", "KnowLedgePublish", new { area= "KonwledgeBackend" })",
+                        statusBarWidth: 'auto',
+                        dragdropWidth: 'auto',
+                        showDelete: true,
+                        showDownload: true,
+                        autoSubmit: false,
+                        showProgress: true,
+                        extraHTML: function () {
+                            return "";
+                        },
+                        //deleteCallback: function (data, pd) {
+                        //    console.log('delete...')
+                        //},
+                        onSuccess: function (files, response, xhr, pd) {
+                            console.log(response)
+                            if (response.status == 1) {
+                                layer.alert("上传成功");
+                                extraObj.reset();
+                            } else {
+                                layer.alert("上传失败，重新上传");
+                            }
+                            console.log(response)
+                        },
+                        onError: function (files, status, message, pd) {
+                            console.error(message);
+                            }
+                        });
+                        $("#extrabutton").click(function () {
+                            extraObj.startUpload();
+                        });
+                },
+            }
+        });
+
+        $(document).ready(function () {
+            $('#summernote').summernote({
+                //airMode: true,
+                lang: 'zh-CN',
+                height: 300,
+                minHeight: 200
+            });
+            vm.init();
+        });
+    </script>
+}
+

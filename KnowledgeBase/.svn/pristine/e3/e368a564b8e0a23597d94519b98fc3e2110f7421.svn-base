@@ -1,0 +1,17 @@
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace BoeSj.KnowledgeBase.Infrastructure.Mongo
+{
+    public interface IMongoEntity<TKey>
+    {
+        /// <summary>
+        ///     主键
+        /// </summary>
+        [BsonId]
+        TKey Id { get; set; }
+    }
+
+}

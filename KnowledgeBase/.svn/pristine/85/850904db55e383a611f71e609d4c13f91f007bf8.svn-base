@@ -1,0 +1,31 @@
+﻿using AutoMapper;
+using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Domain.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Web.AutoMapper
+{
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            //ent to dto
+
+
+            //dto to ent
+            //CreateMap<QAPublishInput, QuestionsPublish>().ForMember(
+            //    dest => dest.Author, option => option.Ignore())
+            //    .ForMember(
+            //    dest => dest.CreateTime, option => option.Ignore())
+            //    .ForMember(
+            //    dest => dest.Flag, option => option.Ignore())
+            //    .ForMember(
+            //    dest => dest.Author, option => option.Ignore())
+            //    .ForMember(
+            //    dest => dest.Author, option => option.Ignore());
+        }
+    }
+}

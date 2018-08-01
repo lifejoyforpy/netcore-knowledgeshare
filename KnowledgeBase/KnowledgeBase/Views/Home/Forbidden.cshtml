@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Error";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section CSS{
+    @*<link href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700&subset=all" rel="stylesheet" type="text/css" />
+        <link href="~/assets/global/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/assets/global/plugins/simple-line-icons/simple-line-icons.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/assets/global/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="~/assets/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css" rel="stylesheet" type="text/css" />
+        <!-- END GLOBAL MANDATORY STYLES -->
+        <!-- BEGIN THEME GLOBAL STYLES -->
+        <link href="~/assets/global/css/components.min.css" rel="stylesheet" id="style_components" type="text/css" />
+        <link href="~/assets/global/css/plugins.min.css" rel="stylesheet" type="text/css" />*@
+    <!-- END THEME GLOBAL STYLES -->
+    <!-- BEGIN PAGE LEVEL STYLES -->
+    <link href="~/Content/assets/pages/css/error.css" rel="stylesheet" type="text/css" />
+}
+
+<div class="">
+    <div class="row">
+        <div class="col-md-12 page-404">
+            <div class="number font-green"> No Access </div>
+            <div class="details">
+                <h3>Oops! You're lost.</h3>
+                <p>
+                    无权限访问
+                    <br />
+                    <a href="@Url.Action("Index", "Home", new {area=""})"> 返回主页 </a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>

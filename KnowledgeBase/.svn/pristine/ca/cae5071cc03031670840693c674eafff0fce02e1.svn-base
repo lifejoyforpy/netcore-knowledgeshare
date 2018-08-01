@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+
+namespace BoeSj.KnowledgeBase.Web.Areas.KnowledgeFrontend.Controllers
+{
+
+    [Area("KnowledgeFrontend")]
+    public class KnowledegeShareController : Controller
+    {
+        public IActionResult Details()
+        {
+            return View();
+        }
+        
+        //列表页
+
+        public IActionResult KnowledegeShareList()
+        {
+
+            return View();
+        }
+    }
+}

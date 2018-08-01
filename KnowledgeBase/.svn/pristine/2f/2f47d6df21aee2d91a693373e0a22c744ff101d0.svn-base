@@ -1,0 +1,37 @@
+﻿using BoeSj.KnowledgeBase.Application.Interface;
+using BoeSj.KnowledgeBase.Infrastructure.Mongo;
+using BoeSj.KnowledgeBase.Repository.Interface;
+using MongoDB.Bson;
+using MongoDB.Driver.GridFS;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Application.Service
+{
+    public class MongoApp : IMongoApp
+    {
+        private IMongoRepository _repository;
+
+        public MongoApp(IMongoRepository repository) 
+        {
+            _repository = repository;
+
+        }
+        public async Task<GridFSFileInfo> DownloadFileAsync(ObjectId id, GridFSDownloadOptions options = null)
+        {
+
+            return await _repository.DownloadFileAsync(id, options);
+
+        }
+        public async Task<ObjectId> UploadFileAsync(string filePath, string fileName, GridFSUploadOptions uploadOptions = null)
+        {
+
+            return await _repository.UploadFileAsync(filePath, fileName, uploadOptions);
+
+        }
+    }
+           
+    
+}

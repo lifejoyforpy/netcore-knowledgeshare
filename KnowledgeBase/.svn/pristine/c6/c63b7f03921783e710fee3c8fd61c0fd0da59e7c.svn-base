@@ -1,0 +1,24 @@
+﻿using AutoMapper;
+using BoeSj.KnowledgeBase.Application.DTO.Input;
+using BoeSj.KnowledgeBase.Application.DTO.Output;
+using BoeSj.KnowledgeBase.Domain.Model;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace BoeSj.KnowledgeBase.Web.AutoMapper
+{
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            //ent to dto
+
+            CreateMap<QuestionsPublish, QAInfoOutput>().ForMember(
+                dest => dest.Content, option => option.Ignore());
+            //dto to ent
+
+        }
+    }
+}
